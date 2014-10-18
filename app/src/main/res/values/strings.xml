@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Blink</string>
+    <string name="title_edittext_preference">Hub host</string>
+    <string name="summary_edittext_preference">The IP or host name of the HA hub</string>
+    <string name="default_host">http://10.0.0.149</string>
+    <string name="preference_key_host">pref_host</string>
+    <string name="title_settings">Settings</string>
+    <string name="action_settings">Settings</string>
 </resources>

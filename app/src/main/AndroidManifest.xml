@@ -7,13 +7,14 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <application
+        android:name=".app.BlinkApp"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".BlinkActivity"
+            android:name=".app.BlinkActivity"
             android:launchMode="singleTask">
 
             <intent-filter>
@@ -28,10 +29,31 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".BlinkReceiver">
-            <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
+        <activity
+            android:name=".app.SettingsActivity"
+            android:label="@string/title_settings"
+            android:parentActivityName=".app.BlinkActivity">
+
+        </activity>
+
+        <receiver android:name=".app.BlinkReceiver">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
         </receiver>
 
+        <meta-data
+            android:name="DATABASE"
+            android:value="blink.db" />
+        <meta-data
+            android:name="VERSION"
+            android:value="1" />
+        <meta-data
+            android:name="QUERY_LOG"
+            android:value="true" />
+        <meta-data
+            android:name="DOMAIN_PACKAGE_NAME"
+            android:value="com.nashlincoln.blink.model" />
     </application>
 
 </manifest>

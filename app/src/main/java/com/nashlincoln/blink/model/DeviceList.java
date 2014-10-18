@@ -2,11 +2,12 @@ package com.nashlincoln.blink.model;
 
 import android.util.Log;
 
-import com.nashlincoln.blink.BlinkApi;
+import com.nashlincoln.blink.network.BlinkApi;
 import com.nashlincoln.blink.event.Event;
 import com.nashlincoln.blink.event.Status;
 import com.nashlincoln.blink.event.Type;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit.Callback;
@@ -19,7 +20,7 @@ import retrofit.client.Response;
 public class DeviceList extends Model {
     private static final String TAG = "DeviceList";
     private static DeviceList sInstance;
-    private List<Device> mDevices;
+    private List<Device> mDevices = new ArrayList<>();
 
     public static DeviceList get() {
         if (sInstance == null) {
@@ -31,6 +32,27 @@ public class DeviceList extends Model {
 
     public List<Device> getDevices() {
         return mDevices;
+    }
+
+    public void syncToServer() {
+
+    }
+
+    public void syncFromServer() {
+        BlinkApi.getClient().getDevices(new Callback<List<Device>>() {
+            @Override
+            public void success(List<Device> devices, Response response) {
+                Log.d(TAG, "devices: " + devices.size());
+//                mDevices = devices;
+
+                event(new Event(Type.Fetch, Status.Success));
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                event(new Event(Type.Fetch, Status.Failure));
+            }
+        });
     }
 
     public void fetch() {

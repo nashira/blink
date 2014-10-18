@@ -1,9 +1,9 @@
 package com.nashlincoln.blink.model;
 
-import com.nashlincoln.blink.BlinkApi;
 import com.nashlincoln.blink.event.Event;
 import com.nashlincoln.blink.event.Status;
 import com.nashlincoln.blink.event.Type;
+import com.nashlincoln.blink.network.BlinkApi;
 
 import java.util.List;
 
@@ -15,16 +15,32 @@ import retrofit.client.Response;
  * Created by nash on 10/5/14.
  */
 public class Device extends Model {
-    public int deviceId;
-    public String userName;
-    List<Attr> attrs;
+    public long id;
+    public String name;
+    public String interconnect;
+    public int deviceTypeId;
+    public List<Attribute> attributes;
+
+    private transient DeviceType deviceType;
+
+    public DeviceType getDeviceType() {
+        if (deviceType == null) {
+            for (DeviceType dt : Database.getInstance().mDeviceTypes) {
+                if (dt.id == deviceTypeId) {
+                    deviceType = dt;
+                    break;
+                }
+            }
+        }
+        return deviceType;
+    }
 
     public boolean isOn() {
-        return attrs.get(0).value_get.equals("ON");
+        return attributes.get(0).value.equals("ON");
     }
 
     public int getValue() {
-        return Integer.parseInt(attrs.get(1).value_get);
+        return Integer.parseInt(attributes.get(1).value);
     }
 
     public void setOn(boolean on) {
@@ -33,27 +49,13 @@ public class Device extends Model {
         }
         final String value = on ? "ON" : "OFF";
 
-        final Attr attr = attrs.get(0);
-
-        if (attr.mInProgressValue != null) {
-            attr.mWaitingValue = value;
-            return;
-        }
-        attr.mInProgressValue = value;
+        final Attribute attr = attributes.get(0);
 
         DeviceList.get().event(new Event(Type.SetOn, Status.InProgress));
-        BlinkApi.getClient().setValue(deviceId, 1, value, new Callback<Response>() {
+        BlinkApi.getClient().setValue(id, 1, value, new Callback<Response>() {
             @Override
             public void success(Response response, Response response2) {
-                attr.value_get = attr.mInProgressValue;
-                attr.mInProgressValue = null;
                 DeviceList.get().event(new Event(Type.SetOn, Status.Success));
-
-                if (attr.mWaitingValue != null) {
-                    String val = attr.mWaitingValue;
-                    attr.mWaitingValue = null;
-                    setOn(val.equals("ON"));
-                }
             }
 
             @Override
@@ -68,27 +70,14 @@ public class Device extends Model {
             return;
         }
         String stringValue = String.valueOf(value);
-        final Attr attr = attrs.get(1);
+        final Attribute attr = attributes.get(1);
 
-        if (attr.mInProgressValue != null) {
-            attr.mWaitingValue = stringValue;
-            return;
-        }
-        attr.mInProgressValue = stringValue;
 
         DeviceList.get().event(new Event(Type.SetValue, Status.InProgress));
-        BlinkApi.getClient().setValue(deviceId, 2, value, new Callback<Response>() {
+        BlinkApi.getClient().setValue(id, 2, value, new Callback<Response>() {
             @Override
             public void success(Response response, Response response2) {
-                attr.value_get = attr.mInProgressValue;
-                attr.mInProgressValue = null;
-                DeviceList.get().event(new Event(Type.SetOn, Status.Success));
-
-                if (attr.mWaitingValue != null) {
-                    String val = attr.mWaitingValue;
-                    attr.mWaitingValue = null;
-                    setValue(Integer.parseInt(val));
-                }
+                DeviceList.get().event(new Event(Type.SetValue, Status.Success));
             }
 
             @Override

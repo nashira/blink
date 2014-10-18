@@ -1,6 +1,8 @@
-package com.nashlincoln.blink;
+package com.nashlincoln.blink.network;
 
+import com.nashlincoln.blink.model.AttributeType;
 import com.nashlincoln.blink.model.Device;
+import com.nashlincoln.blink.model.DeviceType;
 
 import java.util.List;
 
@@ -18,7 +20,7 @@ public interface BlinkApiInterface {
     @FormUrlEncoded
     @POST("/api/api.php")
     public void setValue(
-            @Field("dev") int deviceId,
+            @Field("dev") long deviceId,
             @Field("attr") int attributeId,
             @Field("val") int value,
             Callback<Response> callback);
@@ -26,11 +28,17 @@ public interface BlinkApiInterface {
     @FormUrlEncoded
     @POST("/api/api.php")
     public void setValue(
-            @Field("dev") int deviceId,
+            @Field("dev") long deviceId,
             @Field("attr") int attributeId,
             @Field("val") String value,
             Callback<Response> callback);
 
-    @GET("/api/api_devices.php")
+    @GET("/api/devices/")
     public void getDevices(Callback<List<Device>> callback);
+
+    @GET("/api/device_types/")
+    public void getDeviceTypes(Callback<List<DeviceType>> callback);
+
+    @GET("/api/attribute_types/")
+    public void getAttributeTypes(Callback<List<AttributeType>> callback);
 }
