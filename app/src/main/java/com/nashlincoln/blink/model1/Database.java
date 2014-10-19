@@ -1,7 +1,8 @@
-package com.nashlincoln.blink.model;
+package com.nashlincoln.blink.model1;
 
 import com.nashlincoln.blink.network.BlinkApi;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit.Callback;
@@ -22,6 +23,51 @@ public class Database {
             sInstance = new Database();
         }
         return sInstance;
+    }
+
+    public void syncLocalToServer() {
+        final List<Command> commands = new ArrayList<>();
+        for (Device device : mDevices) {
+            Command command = null;
+            if (device.getState() == null) {
+                device.setState(Device.STATE_NOMINAL);
+            }
+            switch (device.getState()) {
+                case Device.STATE_ADDED:
+                    command = Command.add(device);
+                    break;
+
+                case Device.STATE_REMOVED:
+                    command = Command.remove(device);
+                    break;
+
+                case Device.STATE_UPDATED:
+                    command = Command.update(device);
+
+                    break;
+                case Device.STATE_NOMINAL:
+                    break;
+            }
+            if (command != null) {
+                commands.add(command);
+            }
+        }
+
+        if (commands.size() > 0) {
+            BlinkApi.getClient().sendCommands(commands, new Callback<Response>() {
+                @Override
+                public void success(Response response, Response response2) {
+                    for (Command command : commands) {
+                        command.device.setNominal();
+                    }
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+
+                }
+            });
+        }
     }
 
     public void fetchDeviceTypes() {

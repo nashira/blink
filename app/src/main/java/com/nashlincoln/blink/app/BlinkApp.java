@@ -2,8 +2,11 @@ package com.nashlincoln.blink.app;
 
 import android.app.Application;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 
-import com.nashlincoln.blink.model.Database;
+import com.nashlincoln.blink.model1.DaoMaster;
+import com.nashlincoln.blink.model1.DaoSession;
+import com.nashlincoln.blink.model1.Database;
 import com.nashlincoln.blink.network.BlinkApi;
 
 /**
@@ -15,6 +18,7 @@ public class BlinkApp extends Application {
     private static BlinkApp sInstance;
 
     private SharedPreferences mPreferences;
+    private DaoSession mDaoSession;
 
     public static BlinkApp getApp() {
         return sInstance;
@@ -26,6 +30,15 @@ public class BlinkApp extends Application {
         sInstance = this;
         mPreferences = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
         fetchData();
+
+        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "blink-db", null);
+        SQLiteDatabase db = helper.getWritableDatabase();
+        DaoMaster daoMaster = new DaoMaster(db);
+        mDaoSession = daoMaster.newSession();
+    }
+
+    public DaoSession getDaoSession() {
+        return mDaoSession;
     }
 
     private void fetchData() {

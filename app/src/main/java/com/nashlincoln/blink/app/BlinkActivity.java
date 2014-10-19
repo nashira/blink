@@ -19,19 +19,15 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.nashlincoln.blink.R;
-import com.nashlincoln.blink.event.Event;
-import com.nashlincoln.blink.event.Type;
-import com.nashlincoln.blink.model.Database;
-import com.nashlincoln.blink.model.Device;
-import com.nashlincoln.blink.model.DeviceList;
-import com.nashlincoln.blink.model.Model;
+import com.nashlincoln.blink.model1.Database;
+import com.nashlincoln.blink.model1.Device;
 
 import java.util.List;
 
 /**
  * Created by nash on 10/5/14.
  */
-public class BlinkActivity extends Activity implements Model.OnEvent {
+public class BlinkActivity extends Activity {
 
     private static final String TAG = "BlinkActivity";
     private ListView mListView;
@@ -62,7 +58,6 @@ public class BlinkActivity extends Activity implements Model.OnEvent {
         Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         if (tag != null) {
             Log.d(TAG, "tag != null");
-            Log.d(TAG, "devices: " + DeviceList.get().getDevices().size());
 
             mToggleAfterFetch = true;
 //            if (DeviceList.get().getDevices().size() > 0) {
@@ -152,9 +147,9 @@ public class BlinkActivity extends Activity implements Model.OnEvent {
         private void bindView(int position, Holder holder) {
             Device device = getItem(position);
             holder.position = position;
-            holder.textView.setText(device.name);
+            holder.textView.setText(device.getName());
             holder.checkBox.setChecked(device.isOn());
-            holder.seekBar.setProgress(device.getValue());
+            holder.seekBar.setProgress(device.getLevel());
         }
 
         class Holder implements CompoundButton.OnCheckedChangeListener, SeekBar.OnSeekBarChangeListener {
@@ -179,6 +174,7 @@ public class BlinkActivity extends Activity implements Model.OnEvent {
             public void onCheckedChanged(final CompoundButton compoundButton, boolean b) {
                 Device device = getItem(position);
                 device.setOn(b);
+                Database.getInstance().syncLocalToServer();
             }
 
             @Override
@@ -193,31 +189,9 @@ public class BlinkActivity extends Activity implements Model.OnEvent {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 Device device = getItem(position);
-                device.setValue(seekBar.getProgress());
+                device.setLevel(seekBar.getProgress());
+                Database.getInstance().syncLocalToServer();
             }
-        }
-    }
-
-    @Override
-    public void onEvent(Model model, Event event) {
-        switch (event.status) {
-            case InProgress:
-                break;
-            case Success:
-                if (event.type == Type.Fetch) {
-                    mAdapter.clear();
-                    mAdapter.addAll(DeviceList.get().getDevices());
-                    if (mToggleAfterFetch) {
-                        mToggleAfterFetch = false;
-                        toggleLights();
-                    }
-                } else {
-                    mAdapter.notifyDataSetChanged();
-                }
-                break;
-
-            case Failure:
-                break;
         }
     }
 }

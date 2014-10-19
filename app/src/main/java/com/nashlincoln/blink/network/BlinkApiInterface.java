@@ -1,15 +1,15 @@
 package com.nashlincoln.blink.network;
 
-import com.nashlincoln.blink.model.AttributeType;
-import com.nashlincoln.blink.model.Device;
-import com.nashlincoln.blink.model.DeviceType;
+import com.nashlincoln.blink.model1.AttributeType;
+import com.nashlincoln.blink.model1.Command;
+import com.nashlincoln.blink.model1.Device;
+import com.nashlincoln.blink.model1.DeviceType;
 
 import java.util.List;
 
 import retrofit.Callback;
 import retrofit.client.Response;
-import retrofit.http.Field;
-import retrofit.http.FormUrlEncoded;
+import retrofit.http.Body;
 import retrofit.http.GET;
 import retrofit.http.POST;
 
@@ -17,22 +17,6 @@ import retrofit.http.POST;
  * Created by nash on 10/5/14.
  */
 public interface BlinkApiInterface {
-    @FormUrlEncoded
-    @POST("/api/api.php")
-    public void setValue(
-            @Field("dev") long deviceId,
-            @Field("attr") int attributeId,
-            @Field("val") int value,
-            Callback<Response> callback);
-
-    @FormUrlEncoded
-    @POST("/api/api.php")
-    public void setValue(
-            @Field("dev") long deviceId,
-            @Field("attr") int attributeId,
-            @Field("val") String value,
-            Callback<Response> callback);
-
     @GET("/api/devices/")
     public void getDevices(Callback<List<Device>> callback);
 
@@ -41,4 +25,7 @@ public interface BlinkApiInterface {
 
     @GET("/api/attribute_types/")
     public void getAttributeTypes(Callback<List<AttributeType>> callback);
+
+    @POST("/api/commands/")
+    void sendCommands(@Body List<Command> commands, Callback<Response> callback);
 }
