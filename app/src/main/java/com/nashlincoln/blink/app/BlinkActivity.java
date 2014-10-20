@@ -1,28 +1,18 @@
 package com.nashlincoln.blink.app;
 
 import android.app.Activity;
-import android.content.Context;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Bundle;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.ListView;
-import android.widget.SeekBar;
-import android.widget.TextView;
 
 import com.nashlincoln.blink.R;
-import com.nashlincoln.blink.model1.Database;
-import com.nashlincoln.blink.model1.Device;
-
-import java.util.List;
 
 /**
  * Created by nash on 10/5/14.
@@ -30,27 +20,18 @@ import java.util.List;
 public class BlinkActivity extends Activity {
 
     private static final String TAG = "BlinkActivity";
-    private ListView mListView;
-    private DeviceAdapter mAdapter;
-    private boolean mToggleAfterFetch;
+    private ViewPager mViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_blink);
-        mListView = (ListView) findViewById(R.id.list);
-        mAdapter = new DeviceAdapter(this);
+        mViewPager = (ViewPager) findViewById(R.id.view_pager);
+        mViewPager.setAdapter(new FragmentAdapter(getFragmentManager()));
         if (!BlinkApp.getApp().isConfigured()) {
             Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
         }
-//        handleIntent(getIntent());
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-//        handleIntent(intent);
     }
 
     private void handleIntent(Intent intent) {
@@ -58,13 +39,6 @@ public class BlinkActivity extends Activity {
         Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         if (tag != null) {
             Log.d(TAG, "tag != null");
-
-            mToggleAfterFetch = true;
-//            if (DeviceList.get().getDevices().size() > 0) {
-//                toggleLights();
-//            } else {
-//                mToggleAfterFetch = true;
-//            }
         }
     }
 
@@ -84,114 +58,46 @@ public class BlinkActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void toggleLights() {
-//        boolean isOn = false;
-//        for (Device device : DeviceList.get().getDevices()) {
-//            if (device.isOn()) {
-//                isOn = true;
-//                device.setOn(false);
-//            }
-//        }
-//        if (!isOn) {
-//            for (Device device : DeviceList.get().getDevices()) {
-//                device.setOn(true);
-//            }
-//        }
-    }
+    class FragmentAdapter extends FragmentPagerAdapter {
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        List<Device> devices = Database.getInstance().mDevices;
-        if (devices != null) {
-            mAdapter.clear();
-            mAdapter.addAll(devices);
-            mListView.setAdapter(mAdapter);
-        }
-//        DeviceList.get().addOnEvent(this);
-//        DeviceList.get().fetch();
-    }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-//        DeviceList.get().removeOnEvent(this);
-    }
-
-    class DeviceAdapter extends ArrayAdapter<Device> {
-
-        public DeviceAdapter(Context context) {
-            super(context, 0);
+        public FragmentAdapter(FragmentManager fm) {
+            super(fm);
         }
 
         @Override
-        public int getViewTypeCount() {
-            return super.getViewTypeCount();
+        public CharSequence getPageTitle(int position) {
+            switch (position) {
+                case 0:
+                    return "Devices";
+                case 1:
+                    return "Groups";
+                case 2:
+                    return "Scenes";
+            }
+            return super.getPageTitle(position);
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            Holder holder;
-            if (convertView == null) {
-                convertView = View.inflate(getContext(), R.layout.device_item, null);
-                holder = new Holder(convertView);
-            } else {
-                holder = (Holder) convertView.getTag();
-            }
-
-            bindView(position, holder);
-
-            return convertView;
+        public int getCount() {
+            return 2;
         }
 
-        private void bindView(int position, Holder holder) {
-            Device device = getItem(position);
-            holder.position = position;
-            holder.textView.setText(device.getName());
-            holder.checkBox.setChecked(device.isOn());
-            holder.seekBar.setProgress(device.getLevel());
-        }
+        @Override
+        public Fragment getItem(int position) {
+            String className = null;
+            switch (position) {
+                case 0:
+                    className = DeviceListFragment.class.getName();
+                    break;
 
-        class Holder implements CompoundButton.OnCheckedChangeListener, SeekBar.OnSeekBarChangeListener {
-            int position;
-            TextView textView;
-            CheckBox checkBox;
-            SeekBar seekBar;
-
-            Holder(View view) {
-                view.setTag(this);
-                textView = (TextView) view.findViewById(R.id.text);
-                checkBox = (CheckBox) view.findViewById(R.id.check_box);
-                seekBar = (SeekBar) view.findViewById(R.id.seek_bar);
-                seekBar.setMax(255);
-                checkBox.setOnCheckedChangeListener(this);
-                seekBar.setOnSeekBarChangeListener(this);
+                case 1:
+                    className = GroupListFragment.class.getName();
+                    break;
+                case 2:
             }
-
-
-
-            @Override
-            public void onCheckedChanged(final CompoundButton compoundButton, boolean b) {
-                Device device = getItem(position);
-                device.setOn(b);
-                Database.getInstance().syncLocalToServer();
-            }
-
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                Device device = getItem(position);
-                device.setLevel(seekBar.getProgress());
-                Database.getInstance().syncLocalToServer();
-            }
+            Fragment fragment = Fragment.instantiate(BlinkActivity.this, className);
+            return fragment;
         }
     }
 }

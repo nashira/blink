@@ -1,5 +1,6 @@
-package com.nashlincoln.blink.model1;
+package com.nashlincoln.blink.model;
 
+import com.nashlincoln.blink.app.BlinkApp;
 import com.nashlincoln.blink.network.BlinkApi;
 
 import java.util.ArrayList;
@@ -14,9 +15,7 @@ import retrofit.client.Response;
  */
 public class Database {
     private static Database sInstance;
-    public List<DeviceType> mDeviceTypes;
-    public List<AttributeType> mAttributeTypes;
-    public List<Device> mDevices;
+    private final DaoSession mDaoSession;
 
     public static Database getInstance() {
         if (sInstance == null) {
@@ -25,9 +24,47 @@ public class Database {
         return sInstance;
     }
 
-    public void syncLocalToServer() {
+    public Database() {
+        mDaoSession = BlinkApp.getDaoSession();
+    }
+
+    public void syncGroups() {
         final List<Command> commands = new ArrayList<>();
-        for (Device device : mDevices) {
+        for (Group group : mDaoSession.getGroupDao().loadAll()) {
+            if (group.getState() == null) {
+                group.setState(Device.STATE_NOMINAL);
+            }
+            switch (group.getState()) {
+
+                case Device.STATE_UPDATED:
+                    for (Device device : group.getDevices()) {
+                        commands.add(Command.update(group, device));
+                    }
+
+                    break;
+            }
+        }
+
+        if (commands.size() > 0) {
+            BlinkApi.getClient().sendCommands(commands, new Callback<Response>() {
+                @Override
+                public void success(Response response, Response response2) {
+                    for (Command command : commands) {
+                        command.device.setNominal();
+                    }
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+
+                }
+            });
+        }
+    }
+
+    public void syncDevices() {
+        final List<Command> commands = new ArrayList<>();
+        for (Device device : mDaoSession.getDeviceDao().loadAll()) {
             Command command = null;
             if (device.getState() == null) {
                 device.setState(Device.STATE_NOMINAL);
@@ -74,7 +111,8 @@ public class Database {
         BlinkApi.getClient().getDeviceTypes(new Callback<List<DeviceType>>() {
             @Override
             public void success(List<DeviceType> deviceTypes, Response response) {
-                mDeviceTypes = deviceTypes;
+                DeviceTypeDao deviceTypeDao = mDaoSession.getDeviceTypeDao();
+                deviceTypeDao.insertOrReplaceInTx(deviceTypes);
             }
 
             @Override
@@ -88,7 +126,8 @@ public class Database {
         BlinkApi.getClient().getAttributeTypes(new Callback<List<AttributeType>>() {
             @Override
             public void success(List<AttributeType> attributeTypes, Response response) {
-                mAttributeTypes = attributeTypes;
+                AttributeTypeDao attributeTypeDao = mDaoSession.getAttributeTypeDao();
+                attributeTypeDao.insertOrReplaceInTx(attributeTypes);
             }
 
             @Override
@@ -102,8 +141,19 @@ public class Database {
     public void fetchDevices() {
         BlinkApi.getClient().getDevices(new Callback<List<Device>>() {
             @Override
-            public void success(List<Device> devices, Response response) {
-                mDevices = devices;
+            public void success(final List<Device> devices, Response response) {
+                final DeviceDao deviceDao = mDaoSession.getDeviceDao();
+                mDaoSession.runInTx(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (Device device : devices) {
+                            device.setAttributableType(Device.ATTRIBUTABLE_TYPE);
+                            device.flushAttributes();
+                            device.resetAttributes();
+                        }
+                    }
+                });
+                deviceDao.insertInTx(devices);
             }
 
             @Override

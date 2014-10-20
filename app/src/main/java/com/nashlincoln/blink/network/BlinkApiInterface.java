@@ -1,9 +1,9 @@
 package com.nashlincoln.blink.network;
 
-import com.nashlincoln.blink.model1.AttributeType;
-import com.nashlincoln.blink.model1.Command;
-import com.nashlincoln.blink.model1.Device;
-import com.nashlincoln.blink.model1.DeviceType;
+import com.nashlincoln.blink.model.AttributeType;
+import com.nashlincoln.blink.model.Command;
+import com.nashlincoln.blink.model.Device;
+import com.nashlincoln.blink.model.DeviceType;
 
 import java.util.List;
 

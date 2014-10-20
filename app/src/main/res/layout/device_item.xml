@@ -3,15 +3,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="12dp"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="12dp">
 
     <TextView
         android:id="@+id/text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="12dp"
-        android:layout_marginTop="24dp"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <LinearLayout
@@ -19,6 +18,7 @@
         android:layout_height="wrap_content"
         android:divider="?android:attr/dividerHorizontal"
         android:orientation="horizontal"
+        android:layout_marginBottom="12dp"
         android:showDividers="middle">
 
         <CheckBox
