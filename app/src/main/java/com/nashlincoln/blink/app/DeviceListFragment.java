@@ -5,6 +5,7 @@ import android.app.LoaderManager;
 import android.content.Context;
 import android.content.Loader;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +18,7 @@ import android.widget.TextView;
 
 import com.nashlincoln.blink.R;
 import com.nashlincoln.blink.content.DeviceLoader;
-import com.nashlincoln.blink.model.Database;
+import com.nashlincoln.blink.model.Syncro;
 import com.nashlincoln.blink.model.Device;
 
 import java.util.List;
@@ -26,6 +27,7 @@ import java.util.List;
  * Created by nash on 10/19/14.
  */
 public class DeviceListFragment extends Fragment {
+    private static final String TAG = "DeviceListFragment";
     private ListView mListView;
     private DeviceAdapter mAdapter;
 
@@ -40,17 +42,19 @@ public class DeviceListFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         mAdapter = new DeviceAdapter(getActivity());
         mListView.setAdapter(mAdapter);
-        getLoaderManager().initLoader(0, null, mLoaderCallbacks);
+        getLoaderManager().restartLoader(0, null, mLoaderCallbacks);
     }
 
     private LoaderManager.LoaderCallbacks<List<Device>> mLoaderCallbacks = new LoaderManager.LoaderCallbacks<List<Device>>() {
         @Override
         public Loader<List<Device>> onCreateLoader(int i, Bundle bundle) {
+            Log.d(TAG, "onCreateLoader");
             return new DeviceLoader(getActivity());
         }
 
         @Override
         public void onLoadFinished(Loader<List<Device>> listLoader, List<Device> devices) {
+            Log.d(TAG, "onLoadFinished");
             mAdapter.clear();
             if (devices != null) {
                 mAdapter.addAll(devices);
@@ -59,7 +63,7 @@ public class DeviceListFragment extends Fragment {
 
         @Override
         public void onLoaderReset(Loader<List<Device>> listLoader) {
-
+            Log.d(TAG, "onLoaderReset");
         }
     };
 
@@ -113,13 +117,11 @@ public class DeviceListFragment extends Fragment {
                 seekBar.setOnSeekBarChangeListener(this);
             }
 
-
-
             @Override
             public void onCheckedChanged(final CompoundButton compoundButton, boolean b) {
                 Device device = getItem(position);
                 device.setOn(b);
-                Database.getInstance().syncDevices();
+                Syncro.getInstance().syncDevices();
             }
 
             @Override
@@ -135,7 +137,7 @@ public class DeviceListFragment extends Fragment {
             public void onStopTrackingTouch(SeekBar seekBar) {
                 Device device = getItem(position);
                 device.setLevel(seekBar.getProgress());
-                Database.getInstance().syncDevices();
+                Syncro.getInstance().syncDevices();
             }
         }
     }

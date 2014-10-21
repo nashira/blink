@@ -21,4 +21,9 @@ public class GroupLoader extends ModelLoader<List<Group>> {
     public List<Group> fetch() {
         return BlinkApp.getDaoSession().getGroupDao().loadAll();
     }
+
+    @Override
+    public String getKey() {
+        return Group.KEY;
+    }
 }

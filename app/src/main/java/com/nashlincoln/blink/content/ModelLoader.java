@@ -4,6 +4,11 @@ import android.content.AsyncTaskLoader;
 import android.content.Context;
 import android.util.Log;
 
+import com.nashlincoln.blink.event.Event;
+
+import java.util.Observable;
+import java.util.Observer;
+
 /**
  * Created by nash on 8/28/14.
  */
@@ -16,6 +21,7 @@ public abstract class ModelLoader<T> extends AsyncTaskLoader<T> {
     }
 
     public abstract T fetch();
+    public abstract String getKey();
 
     @Override
     public T loadInBackground() {
@@ -25,6 +31,7 @@ public abstract class ModelLoader<T> extends AsyncTaskLoader<T> {
             // check disk cache
 
             mData = fetch();
+            Event.observe(getKey(), mObserver);
         } catch (Exception e) {
             Log.w(TAG, "exception in fetch: ", e);
         }
@@ -49,7 +56,7 @@ public abstract class ModelLoader<T> extends AsyncTaskLoader<T> {
         }
 
         if (oldData != null) {
-            onReleaseResources(oldData);
+//            onReleaseResources(oldData);
         }
     }
 
@@ -100,7 +107,16 @@ public abstract class ModelLoader<T> extends AsyncTaskLoader<T> {
     }
 
     protected void onReleaseResources(T data) {
+        Event.ignore(getKey(), mObserver);
         // For a simple List<> there is nothing to do.  For something
         // like a Cursor, we would close it here.
     }
+
+    private Observer mObserver = new Observer() {
+        @Override
+        public void update(Observable observable, Object data) {
+            Log.d(TAG, "update");
+            onContentChanged();
+        }
+    };
 }

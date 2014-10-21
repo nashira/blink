@@ -33,6 +33,7 @@ public class Device {
     private List<Attribute> attributes;
 
     // KEEP FIELDS - put your custom fields here
+    public static final String KEY = "Device";
     public static final String ATTRIBUTABLE_TYPE = "Device";
     public static final int STATE_NOMINAL = 0;
     public static final int STATE_ADDED = 1;
@@ -187,6 +188,7 @@ public class Device {
         for (Attribute attribute : attributes) {
             attribute.setAttributableId(id);
             attribute.setAttributableType(ATTRIBUTABLE_TYPE);
+
             attributeDao.insertOrReplace(attribute);
         }
     }

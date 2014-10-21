@@ -24,7 +24,7 @@ public class AttributeTypeDao extends AbstractDao<AttributeType, Long> {
     */
     public static class Properties {
         public final static Property Id = new Property(0, Long.class, "id", true, "_id");
-        public final static Property Type = new Property(1, String.class, "type", false, "TYPE");
+        public final static Property Description = new Property(1, String.class, "description", false, "DESCRIPTION");
         public final static Property DataType = new Property(2, String.class, "dataType", false, "DATA_TYPE");
     };
 
@@ -42,7 +42,7 @@ public class AttributeTypeDao extends AbstractDao<AttributeType, Long> {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "'ATTRIBUTE_TYPE' (" + //
                 "'_id' INTEGER PRIMARY KEY ," + // 0: id
-                "'TYPE' TEXT," + // 1: type
+                "'DESCRIPTION' TEXT," + // 1: description
                 "'DATA_TYPE' TEXT);"); // 2: dataType
     }
 
@@ -62,9 +62,9 @@ public class AttributeTypeDao extends AbstractDao<AttributeType, Long> {
             stmt.bindLong(1, id);
         }
  
-        String type = entity.getType();
-        if (type != null) {
-            stmt.bindString(2, type);
+        String description = entity.getDescription();
+        if (description != null) {
+            stmt.bindString(2, description);
         }
  
         String dataType = entity.getDataType();
@@ -84,7 +84,7 @@ public class AttributeTypeDao extends AbstractDao<AttributeType, Long> {
     public AttributeType readEntity(Cursor cursor, int offset) {
         AttributeType entity = new AttributeType( //
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
-            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // type
+            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // description
             cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2) // dataType
         );
         return entity;
@@ -94,7 +94,7 @@ public class AttributeTypeDao extends AbstractDao<AttributeType, Long> {
     @Override
     public void readEntity(Cursor cursor, AttributeType entity, int offset) {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
-        entity.setType(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
+        entity.setDescription(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
         entity.setDataType(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
      }
     

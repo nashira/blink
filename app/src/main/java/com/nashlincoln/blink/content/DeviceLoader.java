@@ -20,4 +20,9 @@ public class DeviceLoader extends ModelLoader<List<Device>> {
     public List<Device> fetch() {
         return BlinkApp.getDaoSession().getDeviceDao().loadAll();
     }
+
+    @Override
+    public String getKey() {
+        return Device.KEY;
+    }
 }

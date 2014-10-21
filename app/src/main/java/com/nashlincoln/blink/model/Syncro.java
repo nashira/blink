@@ -1,6 +1,7 @@
 package com.nashlincoln.blink.model;
 
 import com.nashlincoln.blink.app.BlinkApp;
+import com.nashlincoln.blink.event.Event;
 import com.nashlincoln.blink.network.BlinkApi;
 
 import java.util.ArrayList;
@@ -13,18 +14,18 @@ import retrofit.client.Response;
 /**
  * Created by nash on 10/18/14.
  */
-public class Database {
-    private static Database sInstance;
+public class Syncro {
+    private static Syncro sInstance;
     private final DaoSession mDaoSession;
 
-    public static Database getInstance() {
+    public static Syncro getInstance() {
         if (sInstance == null) {
-            sInstance = new Database();
+            sInstance = new Syncro();
         }
         return sInstance;
     }
 
-    public Database() {
+    public Syncro() {
         mDaoSession = BlinkApp.getDaoSession();
     }
 
@@ -153,7 +154,37 @@ public class Database {
                         }
                     }
                 });
-                deviceDao.insertInTx(devices);
+                deviceDao.insertOrReplaceInTx(devices);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+
+            }
+        });
+    }
+
+    public void refreshDevices() {
+        BlinkApi.getClient().getDevices(new Callback<List<Device>>() {
+            @Override
+            public void success(final List<Device> devices, Response response) {
+                final DeviceDao deviceDao = mDaoSession.getDeviceDao();
+                mDaoSession.runInTx(new Runnable() {
+                    @Override
+                    public void run() {
+                        mDaoSession.getAttributeDao().queryBuilder()
+                                .where(AttributeDao.Properties.AttributableType.eq(Device.ATTRIBUTABLE_TYPE))
+                                .buildDelete().executeDeleteWithoutDetachingEntities();
+                        deviceDao.deleteAll();
+                        for (Device device : devices) {
+                            device.setAttributableType(Device.ATTRIBUTABLE_TYPE);
+                            device.flushAttributes();
+                            device.resetAttributes();
+                        }
+                    }
+                });
+                deviceDao.insertOrReplaceInTx(devices);
+                Event.notify(Device.KEY);
             }
 
             @Override

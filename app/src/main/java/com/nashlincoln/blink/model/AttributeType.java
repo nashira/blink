@@ -10,7 +10,7 @@ package com.nashlincoln.blink.model;
 public class AttributeType {
 
     private Long id;
-    private String type;
+    private String description;
     private String dataType;
 
     // KEEP FIELDS - put your custom fields here
@@ -23,9 +23,9 @@ public class AttributeType {
         this.id = id;
     }
 
-    public AttributeType(Long id, String type, String dataType) {
+    public AttributeType(Long id, String description, String dataType) {
         this.id = id;
-        this.type = type;
+        this.description = description;
         this.dataType = dataType;
     }
 
@@ -37,12 +37,12 @@ public class AttributeType {
         this.id = id;
     }
 
-    public String getType() {
-        return type;
+    public String getDescription() {
+        return description;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getDataType() {

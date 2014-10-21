@@ -17,7 +17,7 @@ import android.widget.TextView;
 
 import com.nashlincoln.blink.R;
 import com.nashlincoln.blink.content.GroupLoader;
-import com.nashlincoln.blink.model.Database;
+import com.nashlincoln.blink.model.Syncro;
 import com.nashlincoln.blink.model.Group;
 
 import java.util.List;
@@ -117,7 +117,7 @@ public class GroupListFragment extends Fragment {
             public void onCheckedChanged(final CompoundButton compoundButton, boolean b) {
                 Group group = getItem(position);
                 group.setOn(b);
-                Database.getInstance().syncGroups();
+                Syncro.getInstance().syncGroups();
             }
 
             @Override
@@ -133,7 +133,7 @@ public class GroupListFragment extends Fragment {
             public void onStopTrackingTouch(SeekBar seekBar) {
                 Group group = getItem(position);
                 group.setLevel(seekBar.getProgress());
-                Database.getInstance().syncGroups();
+                Syncro.getInstance().syncGroups();
             }
         }
     }

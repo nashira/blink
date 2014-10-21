@@ -1,9 +1,10 @@
 <?php
-  include '../../db.php';
+  include '../db.php';
   header("Content-Type: application/json");
 
+  $db = get_db();
   $query = "SELECT deviceType AS id, deviceDesc AS description FROM zigbeeDeviceType";
-  $result = db_exec_query($query);
+  $result = $db->query($query);
   if (!$result) {
     echo json_encode(["error" => "Cannot execute query."]);
     return;
@@ -15,4 +16,5 @@
   }
 
   echo json_encode($data);
+  $db->close();
 ?>

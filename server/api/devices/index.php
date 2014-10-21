@@ -1,7 +1,9 @@
 <?php
-  include '../../db.php';
+  include '../db.php';
 	header("Content-Type: application/json");
 
+
+  $db = get_db();
   $query = <<<SQL
 SELECT masterDevice.deviceId AS id,
        masterDevice.userName AS name,
@@ -11,7 +13,7 @@ FROM masterDevice, zigbeeDevice
 WHERE zigbeeDevice.masterId = masterDevice.deviceId;
 SQL;
 
-  $result = db_exec_query($query);
+  $result = $db->query($query);
   if (!$result) {
           echo json_encode(["error" => "Cannot execute query."]);
           return;
@@ -27,7 +29,7 @@ WHERE zigbeeDevice.globalId = zigbeeDeviceState.globalId
       AND zigbeeDevice.masterId = '{$row['id']}';
 SQL;
 
-                $attr_result = db_exec_query($attr_query);
+                $attr_result = $db->query($attr_query);
 
                 $attrs = array();
                 while($attr = $attr_result->fetchArray(SQLITE3_ASSOC)) {
@@ -37,5 +39,5 @@ SQL;
                 $data[] = $row;
         }
         echo json_encode($data);
-
+        $db->close()
 ?>

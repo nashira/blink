@@ -61,8 +61,8 @@ public class AttributeDao extends AbstractDao<Attribute, Long> {
                 "'ATTRIBUTABLE_TYPE' TEXT," + // 4: attributableType
                 "'ATTRIBUTE_TYPE_ID' INTEGER);"); // 5: attributeTypeId
         // Add Indexes
-        db.execSQL("CREATE INDEX " + constraint + "IDX_ATTRIBUTE__id_ATTRIBUTABLE_TYPE ON ATTRIBUTE" +
-                " (_id,ATTRIBUTABLE_TYPE);");
+        db.execSQL("CREATE INDEX " + constraint + "IDX_ATTRIBUTE_ATTRIBUTABLE_ID_ATTRIBUTABLE_TYPE ON ATTRIBUTE" +
+                " (ATTRIBUTABLE_ID,ATTRIBUTABLE_TYPE);");
     }
 
     /** Drops the underlying database table. */

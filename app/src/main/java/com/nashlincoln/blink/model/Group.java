@@ -13,7 +13,6 @@ import java.util.ArrayList;
  * Entity mapped to table BLINK_GROUP.
  */
 public class Group {
-
     private String name;
     private Integer state;
     private Long id;
@@ -29,6 +28,7 @@ public class Group {
     private List<Attribute> attributes;
 
     // KEEP FIELDS - put your custom fields here
+    public static final String KEY = "Group";
     public static final String ATTRIBUTABLE_TYPE = "Group";
     public static final int STATE_NOMINAL = 0;
     public static final int STATE_ADDED = 1;

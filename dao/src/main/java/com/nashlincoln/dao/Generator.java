@@ -21,7 +21,7 @@ public class Generator {
         Entity attrType = schema.addEntity("AttributeType");
         attrType.setHasKeepSections(true);
         attrType.addIdProperty();
-        attrType.addStringProperty("type");
+        attrType.addStringProperty("description");
         attrType.addStringProperty("dataType");
 
         Entity attr = schema.addEntity("Attribute");
@@ -62,7 +62,7 @@ public class Generator {
 
 
         Index index = new Index();
-        index.addProperty(attrId);
+        index.addProperty(attributableId);
         index.addProperty(attributableType);
         attr.addIndex(index);
         attr.addToOne(attrType, attributeTypeId);

@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.nashlincoln.blink.R;
+import com.nashlincoln.blink.model.Syncro;
 
 /**
  * Created by nash on 10/5/14.
@@ -54,6 +55,11 @@ public class BlinkActivity extends Activity {
             case R.id.action_settings:
                 Intent intent = new Intent(this, SettingsActivity.class);
                 startActivity(intent);
+                return true;
+
+            case R.id.action_refresh:
+                Syncro.getInstance().refreshDevices();
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }

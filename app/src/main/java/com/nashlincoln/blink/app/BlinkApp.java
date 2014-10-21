@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.nashlincoln.blink.model.DaoMaster;
 import com.nashlincoln.blink.model.DaoSession;
-import com.nashlincoln.blink.model.Database;
+import com.nashlincoln.blink.model.Syncro;
 import com.nashlincoln.blink.network.BlinkApi;
 
 /**
@@ -42,9 +42,9 @@ public class BlinkApp extends Application {
 
     private void fetchData() {
         if (isConfigured()) {
-            Database.getInstance().fetchAttributeTypes();
-            Database.getInstance().fetchDeviceTypes();
-            Database.getInstance().fetchDevices();
+            Syncro.getInstance().fetchAttributeTypes();
+            Syncro.getInstance().fetchDeviceTypes();
+            Syncro.getInstance().fetchDevices();
         }
     }
 
