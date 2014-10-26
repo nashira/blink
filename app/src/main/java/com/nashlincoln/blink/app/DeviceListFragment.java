@@ -5,12 +5,15 @@ import android.app.LoaderManager;
 import android.content.Context;
 import android.content.Loader;
 import android.os.Bundle;
+import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.SeekBar;
@@ -18,7 +21,7 @@ import android.widget.TextView;
 
 import com.nashlincoln.blink.R;
 import com.nashlincoln.blink.content.DeviceLoader;
-import com.nashlincoln.blink.model.Syncro;
+import com.nashlincoln.blink.content.Syncro;
 import com.nashlincoln.blink.model.Device;
 
 import java.util.List;
@@ -32,6 +35,12 @@ public class DeviceListFragment extends Fragment {
     private DeviceAdapter mAdapter;
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mListView = new ListView(inflater.getContext());
         return mListView;
@@ -43,6 +52,20 @@ public class DeviceListFragment extends Fragment {
         mAdapter = new DeviceAdapter(getActivity());
         mListView.setAdapter(mAdapter);
         getLoaderManager().restartLoader(0, null, mLoaderCallbacks);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.add, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_add) {
+            Log.d(TAG, "add");
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private LoaderManager.LoaderCallbacks<List<Device>> mLoaderCallbacks = new LoaderManager.LoaderCallbacks<List<Device>>() {
@@ -74,11 +97,6 @@ public class DeviceListFragment extends Fragment {
         }
 
         @Override
-        public int getViewTypeCount() {
-            return super.getViewTypeCount();
-        }
-
-        @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             Holder holder;
             if (convertView == null) {
@@ -97,28 +115,34 @@ public class DeviceListFragment extends Fragment {
             Device device = getItem(position);
             holder.position = position;
             holder.textView.setText(device.getName());
-            holder.checkBox.setChecked(device.isOn());
+            holder.selfChange = true;
+            holder.toggleView.setChecked(device.isOn());
             holder.seekBar.setProgress(device.getLevel());
+            holder.selfChange = false;
         }
 
         class Holder implements CompoundButton.OnCheckedChangeListener, SeekBar.OnSeekBarChangeListener {
+            boolean selfChange;
             int position;
             TextView textView;
-            CheckBox checkBox;
+            SwitchCompat toggleView;
             SeekBar seekBar;
 
             Holder(View view) {
                 view.setTag(this);
                 textView = (TextView) view.findViewById(R.id.text);
-                checkBox = (CheckBox) view.findViewById(R.id.check_box);
+                toggleView = (SwitchCompat) view.findViewById(R.id.toggle);
                 seekBar = (SeekBar) view.findViewById(R.id.seek_bar);
                 seekBar.setMax(255);
-                checkBox.setOnCheckedChangeListener(this);
+                toggleView.setOnCheckedChangeListener(this);
                 seekBar.setOnSeekBarChangeListener(this);
             }
 
             @Override
             public void onCheckedChanged(final CompoundButton compoundButton, boolean b) {
+                if (selfChange) {
+                    return;
+                }
                 Device device = getItem(position);
                 device.setOn(b);
                 Syncro.getInstance().syncDevices();
@@ -135,6 +159,9 @@ public class DeviceListFragment extends Fragment {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
+                if (selfChange) {
+                    return;
+                }
                 Device device = getItem(position);
                 device.setLevel(seekBar.getProgress());
                 Syncro.getInstance().syncDevices();

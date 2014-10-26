@@ -206,8 +206,8 @@ public class Device {
         if (attribute.getInt() != level) {
             attribute.setValueLocal(level);
             state = STATE_UPDATED;
+            update();
         }
-        update();
     }
 
     public void setOn(boolean on) {
@@ -215,8 +215,8 @@ public class Device {
         if (on != attribute.getBool()) {
             attribute.setValueLocal(on);
             state = STATE_UPDATED;
+            update();
         }
-        update();
     }
 
     public boolean isOn() {

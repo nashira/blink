@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.nashlincoln.blink.model.DaoMaster;
 import com.nashlincoln.blink.model.DaoSession;
-import com.nashlincoln.blink.model.Syncro;
+import com.nashlincoln.blink.content.Syncro;
 import com.nashlincoln.blink.network.BlinkApi;
 
 /**

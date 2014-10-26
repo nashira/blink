@@ -1,4 +1,7 @@
-package com.nashlincoln.blink.model;
+package com.nashlincoln.blink.content;
+
+import com.nashlincoln.blink.model.Attribute;
+import com.nashlincoln.blink.model.Device;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +18,7 @@ public class Command {
     public String name;
     public String type;
     public List<Update> updates;
-    public Device device;
+    public transient Device device;
 
     public static Command add(Device device) {
         Command command = new Command();
@@ -47,19 +50,19 @@ public class Command {
         return command;
     }
 
-    public static Command update(Group group, Device device) {
-        Command command = new Command();
-        command.device = device;
-        command.action = UPDATE;
-        command.id = device.getId();
-        command.updates = new ArrayList<>();
-        for (Attribute attribute : group.getAttributes()) {
-            if (attribute.isChanged()) {
-                command.updates.add(new Update(attribute));
-            }
-        }
-        return command;
-    }
+//    public static Command update(Group group, Device device) {
+//        Command command = new Command();
+//        command.device = device;
+//        command.action = UPDATE;
+//        command.id = device.getId();
+//        command.updates = new ArrayList<>();
+//        for (Attribute attribute : group.getAttributes()) {
+//            if (attribute.isChanged()) {
+//                command.updates.add(new Update(attribute));
+//            }
+//        }
+//        return command;
+//    }
 
     public static class Update {
         public long id;

@@ -50,7 +50,7 @@ public class GroupDeviceDao extends AbstractDao<GroupDevice, Long> {
     public static void createTable(SQLiteDatabase db, boolean ifNotExists) {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "'GROUP_DEVICE' (" + //
-                "'_id' INTEGER PRIMARY KEY ," + // 0: id
+                "'_id' INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: id
                 "'GROUP_ID' INTEGER," + // 1: groupId
                 "'DEVICE_ID' INTEGER);"); // 2: deviceId
         // Add Indexes

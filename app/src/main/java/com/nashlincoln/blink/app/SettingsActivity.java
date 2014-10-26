@@ -7,18 +7,24 @@ import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 
 import com.nashlincoln.blink.R;
 
 /**
  * Created by nash on 10/18/14.
  */
-public class SettingsActivity extends Activity {
+public class SettingsActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content_frame);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        toolbar.setTitleTextColor(0xffffffff);
+        setSupportActionBar(toolbar);
 
         if (savedInstanceState == null) {
             Fragment fragment = Fragment.instantiate(this, SettingsFragment.class.getName());

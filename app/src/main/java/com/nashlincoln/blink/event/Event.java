@@ -37,8 +37,8 @@ public class Event {
         }
     }
 
-    public static void notify(String key) {
-        Log.d(TAG, "notify");
+    public static void broadcast(String key) {
+        Log.d(TAG, "broadcast");
         if (sObservables.containsKey(key)) {
             sObservables.get(key).notifyObservers();
         }

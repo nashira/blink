@@ -1,18 +1,15 @@
 <resources>
-    <color name="primary">#FFC72D</color>
-    <color name="primary_dark">#ca9e24</color>
-    <color name="accent">#2c46ca</color>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="android:Theme.Material.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
-        <!-- Main theme colors -->
-        <!--   your app branding color for the app bar -->
-        <item name="android:colorPrimary">@color/primary</item>
-        <!--   darker variant for the status bar and contextual app bars -->
-        <item name="android:colorPrimaryDark">@color/primary_dark</item>
-        <!--   theme UI controls like checkboxes and text fields -->
-        <item name="android:colorAccent">@color/accent</item>
-    </style>
+    <!--<style name="AppTheme" parent="android:Theme.Material.Light.DarkActionBar">-->
+        <!--&lt;!&ndash; Customize your theme here. &ndash;&gt;-->
+        <!--&lt;!&ndash; Main theme colors &ndash;&gt;-->
+        <!--&lt;!&ndash;   your app branding color for the app bar &ndash;&gt;-->
+        <!--<item name="android:colorPrimary">@color/primary</item>-->
+        <!--&lt;!&ndash;   darker variant for the status bar and contextual app bars &ndash;&gt;-->
+        <!--<item name="android:colorPrimaryDark">@color/primary_dark</item>-->
+        <!--&lt;!&ndash;   theme UI controls like checkboxes and text fields &ndash;&gt;-->
+        <!--<item name="android:colorAccent">@color/accent</item>-->
+    <!--</style>-->
 
 </resources>

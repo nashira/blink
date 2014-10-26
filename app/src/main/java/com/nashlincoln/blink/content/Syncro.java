@@ -1,7 +1,15 @@
-package com.nashlincoln.blink.model;
+package com.nashlincoln.blink.content;
 
 import com.nashlincoln.blink.app.BlinkApp;
 import com.nashlincoln.blink.event.Event;
+import com.nashlincoln.blink.model.AttributeDao;
+import com.nashlincoln.blink.model.AttributeType;
+import com.nashlincoln.blink.model.AttributeTypeDao;
+import com.nashlincoln.blink.model.DaoSession;
+import com.nashlincoln.blink.model.Device;
+import com.nashlincoln.blink.model.DeviceDao;
+import com.nashlincoln.blink.model.DeviceType;
+import com.nashlincoln.blink.model.DeviceTypeDao;
 import com.nashlincoln.blink.network.BlinkApi;
 
 import java.util.ArrayList;
@@ -25,42 +33,8 @@ public class Syncro {
         return sInstance;
     }
 
-    public Syncro() {
+    private Syncro() {
         mDaoSession = BlinkApp.getDaoSession();
-    }
-
-    public void syncGroups() {
-        final List<Command> commands = new ArrayList<>();
-        for (Group group : mDaoSession.getGroupDao().loadAll()) {
-            if (group.getState() == null) {
-                group.setState(Device.STATE_NOMINAL);
-            }
-            switch (group.getState()) {
-
-                case Device.STATE_UPDATED:
-                    for (Device device : group.getDevices()) {
-                        commands.add(Command.update(group, device));
-                    }
-
-                    break;
-            }
-        }
-
-        if (commands.size() > 0) {
-            BlinkApi.getClient().sendCommands(commands, new Callback<Response>() {
-                @Override
-                public void success(Response response, Response response2) {
-                    for (Command command : commands) {
-                        command.device.setNominal();
-                    }
-                }
-
-                @Override
-                public void failure(RetrofitError error) {
-
-                }
-            });
-        }
     }
 
     public void syncDevices() {
@@ -98,6 +72,7 @@ public class Syncro {
                     for (Command command : commands) {
                         command.device.setNominal();
                     }
+                    Event.broadcast(Device.KEY);
                 }
 
                 @Override
@@ -155,6 +130,8 @@ public class Syncro {
                     }
                 });
                 deviceDao.insertOrReplaceInTx(devices);
+                mDaoSession.clear();
+                Event.broadcast(Device.KEY);
             }
 
             @Override
@@ -169,13 +146,16 @@ public class Syncro {
             @Override
             public void success(final List<Device> devices, Response response) {
                 final DeviceDao deviceDao = mDaoSession.getDeviceDao();
+
                 mDaoSession.runInTx(new Runnable() {
                     @Override
                     public void run() {
+                        // todo: figure out how to clear scope without deleting
                         mDaoSession.getAttributeDao().queryBuilder()
                                 .where(AttributeDao.Properties.AttributableType.eq(Device.ATTRIBUTABLE_TYPE))
                                 .buildDelete().executeDeleteWithoutDetachingEntities();
-                        deviceDao.deleteAll();
+//                        deviceDao.deleteAll();
+
                         for (Device device : devices) {
                             device.setAttributableType(Device.ATTRIBUTABLE_TYPE);
                             device.flushAttributes();
@@ -184,7 +164,8 @@ public class Syncro {
                     }
                 });
                 deviceDao.insertOrReplaceInTx(devices);
-                Event.notify(Device.KEY);
+                mDaoSession.clear();
+                Event.broadcast(Device.KEY);
             }
 
             @Override

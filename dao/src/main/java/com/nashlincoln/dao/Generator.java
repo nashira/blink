@@ -51,12 +51,11 @@ public class Generator {
         group.setTableName("BLINK_GROUP");
         group.setHasKeepSections(true);
         group.addStringProperty("name");
-        group.addIntProperty("state");
-        Property groupId = group.addIdProperty().getProperty();
+        Property groupId = group.addIdProperty().autoincrement().getProperty();
         Property groupAttributableType = group.addStringProperty("attributableType").getProperty();
 
         Entity groupDevice = schema.addEntity("GroupDevice");
-        groupDevice.addIdProperty();
+        groupDevice.addIdProperty().autoincrement();
         Property groupDeviceGroupId = groupDevice.addLongProperty("groupId").index().getProperty();
         Property groupDeviceDeviceId = groupDevice.addLongProperty("deviceId").getProperty();
 
@@ -65,8 +64,8 @@ public class Generator {
         index.addProperty(attributableId);
         index.addProperty(attributableType);
         attr.addIndex(index);
-        attr.addToOne(attrType, attributeTypeId);
 
+        attr.addToOne(attrType, attributeTypeId);
         device.addToMany(new Property[]{deviceIdProperty, deviceAttributableType},
                 attr, new Property[]{attributableId, attributableType}).setName("attributes");
         device.addToOne(deviceType, deviceTypeId);

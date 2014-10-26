@@ -1,7 +1,7 @@
 package com.nashlincoln.blink.network;
 
 import com.nashlincoln.blink.model.AttributeType;
-import com.nashlincoln.blink.model.Command;
+import com.nashlincoln.blink.content.Command;
 import com.nashlincoln.blink.model.Device;
 import com.nashlincoln.blink.model.DeviceType;
 

@@ -14,5 +14,9 @@
     <string name="title_section3">Section 3</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_refresh">Refresh</string>
+    <string name="action_add">Add</string>
+    <string name="device_selector_title">Select Devices</string>
+    <string name="action_remove">Remove</string>
+    <string name="action_sync">Apply</string>
 
 </resources>
