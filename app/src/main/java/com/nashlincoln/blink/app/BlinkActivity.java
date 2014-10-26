@@ -105,7 +105,7 @@ public class BlinkActivity extends ActionBarActivity {
 
         @Override
         public int getCount() {
-            return 2;
+            return 3;
         }
 
         @Override
@@ -121,7 +121,7 @@ public class BlinkActivity extends ActionBarActivity {
                     break;
 
                 case 2:
-                    className = GroupListFragment.class.getName();
+                    className = SceneListFragment.class.getName();
                     break;
             }
             Fragment fragment = Fragment.instantiate(BlinkActivity.this, className);

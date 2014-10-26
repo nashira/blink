@@ -8,57 +8,50 @@ import de.greenrobot.dao.DaoException;
 
 // KEEP INCLUDES - put your custom includes here
 import com.nashlincoln.blink.app.BlinkApp;
-import com.nashlincoln.blink.event.Event;
-import java.util.ArrayList;
 // KEEP INCLUDES END
 /**
- * Entity mapped to table BLINK_GROUP.
+ * Entity mapped to table SCENE_DEVICE.
  */
-public class Group {
+public class SceneDevice {
 
-    private String name;
     private Long id;
+    private Long sceneId;
+    private Long deviceId;
     private String attributableType;
 
     /** Used to resolve relations */
     private transient DaoSession daoSession;
 
     /** Used for active entity operations. */
-    private transient GroupDao myDao;
+    private transient SceneDeviceDao myDao;
 
-    private List<GroupDevice> groupDeviceList;
+    private Device device;
+    private Long device__resolvedKey;
+
     private List<Attribute> attributes;
 
     // KEEP FIELDS - put your custom fields here
-    public static final String KEY = "Group";
-    public static final String ATTRIBUTABLE_TYPE = "Group";
+    private static final String ATTRIBUTABLE_TYPE = "Scene";
     // KEEP FIELDS END
 
-    public Group() {
+    public SceneDevice() {
     }
 
-    public Group(Long id) {
+    public SceneDevice(Long id) {
         this.id = id;
     }
 
-    public Group(String name, Long id, String attributableType) {
-        this.name = name;
+    public SceneDevice(Long id, Long sceneId, Long deviceId, String attributableType) {
         this.id = id;
+        this.sceneId = sceneId;
+        this.deviceId = deviceId;
         this.attributableType = attributableType;
     }
 
     /** called by internal mechanisms, do not call yourself. */
     public void __setDaoSession(DaoSession daoSession) {
         this.daoSession = daoSession;
-        myDao = daoSession != null ? daoSession.getGroupDao() : null;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+        myDao = daoSession != null ? daoSession.getSceneDeviceDao() : null;
     }
 
     public Long getId() {
@@ -69,6 +62,22 @@ public class Group {
         this.id = id;
     }
 
+    public Long getSceneId() {
+        return sceneId;
+    }
+
+    public void setSceneId(Long sceneId) {
+        this.sceneId = sceneId;
+    }
+
+    public Long getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(Long deviceId) {
+        this.deviceId = deviceId;
+    }
+
     public String getAttributableType() {
         return attributableType;
     }
@@ -77,26 +86,29 @@ public class Group {
         this.attributableType = attributableType;
     }
 
-    /** To-many relationship, resolved on first access (and after reset). Changes to to-many relations are not persisted, make changes to the target entity. */
-    public List<GroupDevice> getGroupDeviceList() {
-        if (groupDeviceList == null) {
+    /** To-one relationship, resolved on first access. */
+    public Device getDevice() {
+        Long __key = this.deviceId;
+        if (device__resolvedKey == null || !device__resolvedKey.equals(__key)) {
             if (daoSession == null) {
                 throw new DaoException("Entity is detached from DAO context");
             }
-            GroupDeviceDao targetDao = daoSession.getGroupDeviceDao();
-            List<GroupDevice> groupDeviceListNew = targetDao._queryGroup_GroupDeviceList(id);
+            DeviceDao targetDao = daoSession.getDeviceDao();
+            Device deviceNew = targetDao.load(__key);
             synchronized (this) {
-                if(groupDeviceList == null) {
-                    groupDeviceList = groupDeviceListNew;
-                }
+                device = deviceNew;
+            	device__resolvedKey = __key;
             }
         }
-        return groupDeviceList;
+        return device;
     }
 
-    /** Resets a to-many relationship, making the next get call to query for a fresh result. */
-    public synchronized void resetGroupDeviceList() {
-        groupDeviceList = null;
+    public void setDevice(Device device) {
+        synchronized (this) {
+            this.device = device;
+            deviceId = device == null ? null : device.getId();
+            device__resolvedKey = deviceId;
+        }
     }
 
     /** To-many relationship, resolved on first access (and after reset). Changes to to-many relations are not persisted, make changes to the target entity. */
@@ -106,7 +118,7 @@ public class Group {
                 throw new DaoException("Entity is detached from DAO context");
             }
             AttributeDao targetDao = daoSession.getAttributeDao();
-            List<Attribute> attributesNew = targetDao._queryGroup_Attributes(id, attributableType);
+            List<Attribute> attributesNew = targetDao._querySceneDevice_Attributes(id, attributableType);
             synchronized (this) {
                 if(attributes == null) {
                     attributes = attributesNew;
@@ -147,31 +159,6 @@ public class Group {
 
     // KEEP METHODS - put your custom methods here
 
-    public void deleteWithReferences() {
-        BlinkApp.getDaoSession().runInTx(new Runnable() {
-            @Override
-            public void run() {
-                for (GroupDevice groupDevice : getGroupDeviceList()) {
-                    groupDevice.delete();
-                }
-
-                for (Attribute attribute : getAttributes()) {
-                    attribute.delete();
-                }
-
-                delete();
-
-                Event.broadcast(Group.KEY);
-            }
-        });
-    }
-
-    public static Group newInstance() {
-        Group group = new Group();
-        group.setAttributableType(ATTRIBUTABLE_TYPE);
-        return group;
-    }
-
     public void copyAttributes(List<Attribute> attributes) {
         AttributeDao attributeDao = BlinkApp.getDaoSession().getAttributeDao();
         for (Attribute attribute : attributes) {
@@ -187,42 +174,16 @@ public class Group {
         resetAttributes();
     }
 
-    public List<Device> getDevices() {
-        List<Device> devices = new ArrayList<>();
-        for (GroupDevice groupDevice : getGroupDeviceList()) {
-            devices.add(groupDevice.getDevice());
-        }
-        return devices;
-    }
-
     public void setLevel(final int level) {
-        BlinkApp.getDaoSession().runInTx(new Runnable() {
-            @Override
-            public void run() {
-                Attribute attribute = getAttributes().get(1);
-                attribute.setValue(String.valueOf(level));
-                attribute.update();
-
-                for (Device device : getDevices()) {
-                    device.setLevel(level);
-                }
-            }
-        });
+        Attribute attribute = getAttributes().get(1);
+        attribute.setValue(String.valueOf(level));
+        attribute.update();
     }
 
     public void setOn(final boolean on) {
-        BlinkApp.getDaoSession().runInTx(new Runnable() {
-            @Override
-            public void run() {
-                Attribute attribute = getAttributes().get(0);
-                attribute.setValue(on ? Attribute.ON : Attribute.OFF);
-                attribute.update();
-
-                for (Device device : getDevices()) {
-                    device.setOn(on);
-                }
-            }
-        });
+        Attribute attribute = getAttributes().get(0);
+        attribute.setValue(on ? Attribute.ON : Attribute.OFF);
+        attribute.update();
     }
 
     public boolean isOn() {
@@ -233,16 +194,10 @@ public class Group {
         return getAttributes().get(1).getInt();
     }
 
-    public void updateDevices() {
-        BlinkApp.getDaoSession().runInTx(new Runnable() {
-            @Override
-            public void run() {
-                for (Device device : getDevices()) {
-                    device.setOn(isOn());
-                    device.setLevel(getLevel());
-                }
-            }
-        });
+    public static SceneDevice newInstance() {
+        SceneDevice sceneDevice = new SceneDevice();
+        sceneDevice.setAttributableType(ATTRIBUTABLE_TYPE);
+        return sceneDevice;
     }
     // KEEP METHODS END
 

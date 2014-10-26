@@ -14,6 +14,9 @@ import com.nashlincoln.blink.model.Device;
 import com.nashlincoln.blink.model.Group;
 import com.nashlincoln.blink.model.GroupDevice;
 import com.nashlincoln.blink.model.GroupDeviceDao;
+import com.nashlincoln.blink.model.Scene;
+import com.nashlincoln.blink.model.SceneDevice;
+import com.nashlincoln.blink.model.SceneDeviceDao;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,7 +26,7 @@ import java.util.Map;
 /**
  * Created by nash on 10/24/14.
  */
-public class AddGroupDialogFragment extends DialogFragment {
+public class AddSceneDialogFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -36,8 +39,8 @@ public class AddGroupDialogFragment extends DialogFragment {
 
         final List<String> joinedName = new ArrayList<String>();
 
-        final Group group = Group.newInstance();
-        final Map<Integer, GroupDevice> groupDevices = new HashMap<>();
+        final Scene scene = new Scene();
+        final Map<Integer, SceneDevice> sceneDevices = new HashMap<>();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.device_selector_title);
@@ -45,32 +48,32 @@ public class AddGroupDialogFragment extends DialogFragment {
                 @Override
                 public void onClick(DialogInterface dialog, int which, boolean isChecked) {
                     if (isChecked) {
-                        GroupDevice groupDevice = new GroupDevice();
-                        groupDevice.setDeviceId(devices.get(which).getId());
-                        groupDevices.put(which, groupDevice);
+                        SceneDevice sceneDevice = SceneDevice.newInstance();
+                        sceneDevice.setDeviceId(devices.get(which).getId());
+                        sceneDevices.put(which, sceneDevice);
                         joinedName.add(devices.get(which).getName());
                     } else {
-                        groupDevices.remove(which);
+                        sceneDevices.remove(which);
                         joinedName.remove(devices.get(which).getName());
                     }
                 }})
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        if (groupDevices.isEmpty()) {
+                        if (sceneDevices.isEmpty()) {
                             return;
                         }
 
-                        group.setName(TextUtils.join(", ", joinedName));
-                        BlinkApp.getDaoSession().getGroupDao().insert(group);
-                        GroupDeviceDao groupDeviceDao = BlinkApp.getDaoSession().getGroupDeviceDao();
-                        for (GroupDevice groupDevice : groupDevices.values()) {
-                            groupDevice.setGroupId(group.getId());
-                            groupDeviceDao.insert(groupDevice);
+                        scene.setName(TextUtils.join(", ", joinedName));
+                        BlinkApp.getDaoSession().getSceneDao().insert(scene);
+                        SceneDeviceDao sceneDeviceDao = BlinkApp.getDaoSession().getSceneDeviceDao();
+                        for (SceneDevice sceneDevice : sceneDevices.values()) {
+                            sceneDevice.setSceneId(scene.getId());
+                            sceneDeviceDao.insert(sceneDevice);
+                            sceneDevice.copyAttributes(devices.get(0).getAttributes());
                         }
-                        group.copyAttributes(devices.get(0).getAttributes());
-                        group.resetGroupDeviceList();
-                        Event.broadcast(Group.KEY);
+                        scene.resetSceneDeviceList();
+                        Event.broadcast(Scene.KEY);
                     }
                 })
                 .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {

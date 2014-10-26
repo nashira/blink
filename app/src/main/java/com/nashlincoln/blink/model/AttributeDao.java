@@ -40,6 +40,7 @@ public class AttributeDao extends AbstractDao<Attribute, Long> {
 
     private Query<Attribute> device_AttributesQuery;
     private Query<Attribute> group_AttributesQuery;
+    private Query<Attribute> sceneDevice_AttributesQuery;
 
     public AttributeDao(DaoConfig config) {
         super(config);
@@ -194,6 +195,22 @@ public class AttributeDao extends AbstractDao<Attribute, Long> {
             }
         }
         Query<Attribute> query = group_AttributesQuery.forCurrentThread();
+        query.setParameter(0, attributableId);
+        query.setParameter(1, attributableType);
+        return query.list();
+    }
+
+    /** Internal query to resolve the "attributes" to-many relationship of SceneDevice. */
+    public List<Attribute> _querySceneDevice_Attributes(Long attributableId, String attributableType) {
+        synchronized (this) {
+            if (sceneDevice_AttributesQuery == null) {
+                QueryBuilder<Attribute> queryBuilder = queryBuilder();
+                queryBuilder.where(Properties.AttributableId.eq(null));
+                queryBuilder.where(Properties.AttributableType.eq(null));
+                sceneDevice_AttributesQuery = queryBuilder.build();
+            }
+        }
+        Query<Attribute> query = sceneDevice_AttributesQuery.forCurrentThread();
         query.setParameter(0, attributableId);
         query.setParameter(1, attributableType);
         return query.list();

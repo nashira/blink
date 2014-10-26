@@ -59,6 +59,18 @@ public class Generator {
         Property groupDeviceGroupId = groupDevice.addLongProperty("groupId").index().getProperty();
         Property groupDeviceDeviceId = groupDevice.addLongProperty("deviceId").getProperty();
 
+        Entity scene = schema.addEntity("Scene");
+        scene.setHasKeepSections(true);
+        scene.addStringProperty("name");
+        Property sceneId = scene.addIdProperty().autoincrement().getProperty();
+
+        Entity sceneDevice = schema.addEntity("SceneDevice");
+        sceneDevice.setHasKeepSections(true);
+        Property sceneDeviceId = sceneDevice.addIdProperty().autoincrement().getProperty();
+        Property sceneDeviceSceneId = sceneDevice.addLongProperty("sceneId").getProperty();
+        Property sceneDeviceDeviceId = sceneDevice.addLongProperty("deviceId").getProperty();
+        Property sceneDeviceAttributableType = sceneDevice.addStringProperty("attributableType").getProperty();
+
 
         Index index = new Index();
         index.addProperty(attributableId);
@@ -79,5 +91,15 @@ public class Generator {
                 attr, new Property[]{attributableId, attributableType}).setName("attributes");
 
         groupDevice.addToOne(device, groupDeviceDeviceId);
+
+        index = new Index();
+        index.addProperty(sceneDeviceId);
+        index.addProperty(sceneDeviceAttributableType);
+        sceneDevice.addIndex(index);
+
+        scene.addToMany(sceneDevice, sceneDeviceSceneId);
+        sceneDevice.addToOne(device, sceneDeviceDeviceId);
+        sceneDevice.addToMany(new Property[]{sceneDeviceId, sceneDeviceAttributableType},
+                attr, new Property[]{attributableId, attributableType}).setName("attributes");
     }
 }

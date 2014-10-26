@@ -72,6 +72,7 @@ public class GroupListFragment extends Fragment {
 
             fragment.show(getFragmentManager(), ADD_FRAG);
             Log.d(TAG, "add");
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }

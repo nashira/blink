@@ -2,7 +2,8 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
     android:padding="12dp">
 
     <ImageButton
@@ -13,30 +14,24 @@
         android:background="?android:selectableItemBackground"
         android:src="@drawable/ic_item_overflow" />
 
+    <ImageButton
+        android:id="@+id/button_apply"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?android:selectableItemBackground"
+        android:src="@drawable/ic_done_all_grey600_24dp" />
+
     <TextView
         android:id="@+id/text"
         android:maxLines="2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
-        android:layout_marginBottom="12dp"
         android:layout_toLeftOf="@id/button_settings"
+        android:layout_toRightOf="@id/button_apply"
         android:ellipsize="end"
         android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <android.support.v7.widget.SwitchCompat
-        android:id="@+id/toggle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingRight="2dp"
-        android:layout_below="@id/text" />
-
-    <SeekBar
-        android:id="@+id/seek_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/text"
-        android:layout_marginLeft="8dp"
-        android:layout_toRightOf="@id/toggle" />
 
 </RelativeLayout>
