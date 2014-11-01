@@ -17,25 +17,25 @@
   foreach ($commands as $command) {
     switch ($command->action) {
       case 'add':
-        exec('aprontest -a -r ' . escapeshellarg($command->type));
+        exec('aprontest -a -r ' . escapeshellarg($command->type) . ' &> /dev/null &');
         $responses[] = ['status' => 'ok'];
       break;
 
       case 'remove':
-        exec('aprontest -d -m ' . escapeshellarg($command->id));
+        exec('aprontest -d -m ' . escapeshellarg($command->id) . ' &> /dev/null &');
         $responses[] = ['status' => 'ok'];
       break;
 
       case 'update':
         foreach ($command->updates as $update) {
           $attr = ' -t ' . escapeshellarg($update->id) . ' -v ' . escapeshellarg($update->value);
-          exec('aprontest -u -m ' . escapeshellarg($command->id) . $attr);
+          exec('aprontest -u -m ' . escapeshellarg($command->id) . $attr . ' &> /dev/null &');
         }
         $responses[] = ['status' => 'ok'];
       break;
 
       case 'set-name':
-        exec('aprontest -m ' . escapeshellarg($command->id) . ' --set-name ' .  escapeshellarg($command->name));
+        exec('aprontest -m ' . escapeshellarg($command->id) . ' --set-name ' .  escapeshellarg($command->name) . ' &> /dev/null &');
         $responses[] = ['status' => 'ok'];
       break;
 

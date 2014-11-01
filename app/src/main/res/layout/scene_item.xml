@@ -12,6 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:background="?android:selectableItemBackground"
+        android:padding="4dp"
         android:src="@drawable/ic_item_overflow" />
 
     <ImageButton
@@ -19,11 +20,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="?android:selectableItemBackground"
+        android:padding="6dp"
         android:src="@drawable/ic_done_all_grey600_24dp" />
 
     <TextView
         android:id="@+id/text"
-        android:maxLines="2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
@@ -32,6 +33,7 @@
         android:layout_toLeftOf="@id/button_settings"
         android:layout_toRightOf="@id/button_apply"
         android:ellipsize="end"
+        android:maxLines="2"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
 </RelativeLayout>
