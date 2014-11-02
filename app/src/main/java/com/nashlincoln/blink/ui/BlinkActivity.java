@@ -1,12 +1,14 @@
-package com.nashlincoln.blink.app.ui;
+package com.nashlincoln.blink.ui;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
@@ -18,6 +20,7 @@ import com.nashlincoln.blink.R;
 import com.nashlincoln.blink.app.BlinkApp;
 import com.nashlincoln.blink.app.FragmentPagerAdapter;
 import com.nashlincoln.blink.content.Syncro;
+import com.nashlincoln.blink.nfc.NfcUtils;
 import com.nashlincoln.blink.widget.SlidingTabLayout;
 
 /**
@@ -55,12 +58,21 @@ public class BlinkActivity extends ActionBarActivity {
         }
     }
 
-    private void handleIntent(Intent intent) {
-        Log.d(TAG, "handleIntent");
-        Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-        if (tag != null) {
-            Log.d(TAG, "tag != null");
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        if (intent.hasExtra(BlinkApp.EXTRA_NFC_WRITE)) {
+            NfcUtils.writeTag(this, intent);
+        } else {
+            NfcUtils.readTag(this, intent);
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(this);
+        nfcAdapter.disableForegroundDispatch(this);
     }
 
     @Override

@@ -1,6 +1,8 @@
 package com.nashlincoln.blink.model;
 
 import java.util.List;
+
+import com.nashlincoln.blink.content.Command;
 import com.nashlincoln.blink.model.DaoSession;
 import de.greenrobot.dao.DaoException;
 
@@ -9,6 +11,9 @@ import de.greenrobot.dao.DaoException;
 // KEEP INCLUDES - put your custom includes here
 import com.nashlincoln.blink.app.BlinkApp;
 import com.nashlincoln.blink.event.Event;
+import com.nashlincoln.blink.network.BlinkApi;
+import com.nashlincoln.blink.nfc.NfcCommand;
+
 import java.util.ArrayList;
 // KEEP INCLUDES END
 /**
@@ -243,6 +248,27 @@ public class Group {
                 }
             }
         });
+    }
+
+    public String toNfc() {
+        List<NfcCommand> commands = new ArrayList<>();
+        List<NfcCommand.Update> updates = new ArrayList<>();
+
+        for (Attribute attribute : getAttributes()) {
+            NfcCommand.Update update = new NfcCommand.Update();
+            update.i = attribute.getAttributeTypeId();
+            update.v = attribute.getValue();
+            updates.add(update);
+        }
+
+        for (Device device : getDevices()) {
+            NfcCommand command = new NfcCommand();
+            command.i = device.getId();
+            command.u = updates;
+            commands.add(command);
+        }
+
+        return BlinkApi.getGson().toJson(commands);
     }
     // KEEP METHODS END
 

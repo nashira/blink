@@ -11,13 +11,6 @@ import java.util.Observer;
  * Created by nash on 10/5/14.
  */
 public class Event {
-//    public Type type;
-//    public Status status;
-//
-//    public Event(Type type, Status status) {
-//        this.type = type;
-//        this.status = status;
-//    }
 
     private static final Map<String, ObsImpl> sObservables = new HashMap<>();
     private static final String TAG = "Event";
@@ -41,6 +34,13 @@ public class Event {
         Log.d(TAG, "broadcast");
         if (sObservables.containsKey(key)) {
             sObservables.get(key).notifyObservers();
+        }
+    }
+
+    public static void broadcast(String key, Object data) {
+        Log.d(TAG, "broadcast");
+        if (sObservables.containsKey(key)) {
+            sObservables.get(key).notifyObservers(data);
         }
     }
 

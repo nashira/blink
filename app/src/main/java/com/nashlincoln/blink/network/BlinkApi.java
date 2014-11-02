@@ -13,6 +13,7 @@ import retrofit.converter.GsonConverter;
  */
 public class BlinkApi {
     private static BlinkApiInterface sService;
+    private static Gson sGson;
 
     private BlinkApi() {
     }
@@ -26,17 +27,27 @@ public class BlinkApi {
         return sService;
     }
 
+    public static Gson getGson() {
+
+        if (sService == null) {
+            createService(BlinkApp.getApp().getHost());
+        }
+
+        return sGson;
+    }
+
     public static void createService(String host) {
+        sGson = new GsonBuilder()
+                .setFieldNamingPolicy(FieldNamingPolicy.IDENTITY)
+                .create();
+
         if (host == null || host.equals("")) {
             sService = null;
             return;
         }
-        Gson gson = new GsonBuilder()
-                .setFieldNamingPolicy(FieldNamingPolicy.IDENTITY)
-                .create();
 
         RestAdapter restAdapter = new RestAdapter.Builder()
-                .setConverter(new GsonConverter(gson))
+                .setConverter(new GsonConverter(sGson))
                 .setEndpoint(BlinkApp.getApp().getHost())
                 .setLogLevel(RestAdapter.LogLevel.BASIC)
 //                    .setLogLevel(RestAdapter.LogLevel.HEADERS)

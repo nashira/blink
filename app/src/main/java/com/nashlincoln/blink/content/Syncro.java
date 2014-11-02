@@ -1,9 +1,12 @@
 package com.nashlincoln.blink.content;
 
+import android.content.ContentResolver;
+import android.database.ContentObserver;
 import android.util.Log;
 
 import com.nashlincoln.blink.app.BlinkApp;
 import com.nashlincoln.blink.event.Event;
+import com.nashlincoln.blink.model.Attribute;
 import com.nashlincoln.blink.model.AttributeDao;
 import com.nashlincoln.blink.model.AttributeType;
 import com.nashlincoln.blink.model.AttributeTypeDao;
@@ -13,6 +16,7 @@ import com.nashlincoln.blink.model.DeviceDao;
 import com.nashlincoln.blink.model.DeviceType;
 import com.nashlincoln.blink.model.DeviceTypeDao;
 import com.nashlincoln.blink.network.BlinkApi;
+import com.nashlincoln.blink.nfc.NfcCommand;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +32,7 @@ import retrofit.client.Response;
  */
 public class Syncro {
     private static final String TAG = "Syncro";
+    public static final String CONNECTION = "Connection";
     private static Syncro sInstance;
     private final DaoSession mDaoSession;
     private boolean mIsConnected = true;
@@ -211,5 +216,29 @@ public class Syncro {
             });
             refreshDevices();
         }
+
+        Event.broadcast(CONNECTION, mIsConnected);
+    }
+
+    public void applyNfcCommands(final List<NfcCommand> commands) {
+        final DeviceDao deviceDao = mDaoSession.getDeviceDao();
+        mDaoSession.runInTx(new Runnable() {
+            @Override
+            public void run() {
+                for (NfcCommand command : commands) {
+                    Device device = deviceDao.load(command.i);
+                    if (device != null) {
+                        for (NfcCommand.Update update : command.u) {
+                            if (update.i == 1) {
+                                device.setOn(update.v.equals(Attribute.ON));
+                            } else if (update.i == 2) {
+                                device.setLevel(Integer.parseInt(update.v));
+                            }
+                        }
+                    }
+                }
+                syncDevices();
+            }
+        });
     }
 }

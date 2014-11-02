@@ -1,4 +1,4 @@
-package com.nashlincoln.blink.app.ui;
+package com.nashlincoln.blink.ui;
 
 import android.app.DialogFragment;
 import android.app.Fragment;
@@ -26,6 +26,7 @@ import com.nashlincoln.blink.R;
 import com.nashlincoln.blink.content.GroupLoader;
 import com.nashlincoln.blink.content.Syncro;
 import com.nashlincoln.blink.model.Group;
+import com.nashlincoln.blink.nfc.NfcUtils;
 
 import java.util.List;
 
@@ -202,6 +203,11 @@ public class GroupListFragment extends Fragment {
                         group = getItem(position);
                         group.updateDevices();
                         Syncro.getInstance().syncDevices();
+                        break;
+
+                    case R.id.action_write_nfc:
+                        group = getItem(position);
+                        NfcUtils.stageWrite(getActivity(), group.toNfc());
                         break;
                 }
                 return false;

@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 
+import com.nashlincoln.blink.BuildConfig;
 import com.nashlincoln.blink.R;
 import com.nashlincoln.blink.model.DaoMaster;
 import com.nashlincoln.blink.model.DaoSession;
@@ -15,6 +16,7 @@ import com.nashlincoln.blink.network.BlinkApi;
  * Created by nash on 10/17/14.
  */
 public class BlinkApp extends Application {
+    public static final String EXTRA_NFC_WRITE = BuildConfig.APPLICATION_ID + ".NFC_WRITE";
     private static String PREF_API_HOST;
     private static BlinkApp sInstance;
 

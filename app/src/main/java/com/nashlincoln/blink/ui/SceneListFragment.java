@@ -1,4 +1,4 @@
-package com.nashlincoln.blink.app.ui;
+package com.nashlincoln.blink.ui;
 
 import android.app.DialogFragment;
 import android.app.Fragment;

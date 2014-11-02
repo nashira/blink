@@ -16,8 +16,8 @@ import com.nashlincoln.blink.content.Syncro;
 /**
  * Created by nash on 10/12/14.
  */
-public class BlinkReceiver extends BroadcastReceiver {
-    private static final String TAG = "BlinkReceiver";
+public class NetworkReceiver extends BroadcastReceiver {
+    private static final String TAG = "NetworkReceiver";
 
     @Override
     public void onReceive(Context context, Intent intent) {
