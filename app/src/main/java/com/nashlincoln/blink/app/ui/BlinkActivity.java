@@ -1,4 +1,4 @@
-package com.nashlincoln.blink.app;
+package com.nashlincoln.blink.app.ui;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -15,6 +15,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.nashlincoln.blink.R;
+import com.nashlincoln.blink.app.BlinkApp;
+import com.nashlincoln.blink.app.FragmentPagerAdapter;
 import com.nashlincoln.blink.content.Syncro;
 import com.nashlincoln.blink.widget.SlidingTabLayout;
 

@@ -1,4 +1,4 @@
-package com.nashlincoln.blink.app;
+package com.nashlincoln.blink.app.ui;
 
 
 import android.app.AlertDialog;
@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.nashlincoln.blink.R;
+import com.nashlincoln.blink.app.BlinkApp;
 import com.nashlincoln.blink.event.Event;
 import com.nashlincoln.blink.model.Device;
 import com.nashlincoln.blink.model.Group;

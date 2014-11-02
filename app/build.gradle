@@ -19,7 +19,7 @@ def buildTime() {
 
 android {
     compileSdkVersion 21
-    buildToolsVersion "21.0.1"
+    buildToolsVersion "21.1.0"
 
     defaultConfig {
         applicationId "com.nashlincoln.blink"

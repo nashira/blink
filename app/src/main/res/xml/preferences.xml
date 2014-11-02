@@ -4,8 +4,14 @@
 
     <EditTextPreference
         android:key="@string/preference_key_host"
-        android:title="@string/title_edittext_preference"
-        android:summary="@string/summary_edittext_preference"
+        android:title="@string/title_preference_host"
+        android:summary="@string/summary_preference_host"
         android:defaultValue="@string/default_host"/>
+
+    <EditTextPreference
+        android:key="@string/preference_key_ssid"
+        android:title="@string/title_preference_ssid"
+        android:summary="@string/summary_preference_ssid"
+        android:defaultValue="@string/default_ssid"/>
 
 </PreferenceScreen>

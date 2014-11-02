@@ -1,4 +1,4 @@
-package com.nashlincoln.blink.app;
+package com.nashlincoln.blink.app.ui;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -11,6 +11,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 
 import com.nashlincoln.blink.R;
+import com.nashlincoln.blink.app.BlinkApp;
 
 /**
  * Created by nash on 10/18/14.

@@ -3,7 +3,9 @@ package com.nashlincoln.blink.app;
 import android.app.Application;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
+import android.preference.PreferenceManager;
 
+import com.nashlincoln.blink.R;
 import com.nashlincoln.blink.model.DaoMaster;
 import com.nashlincoln.blink.model.DaoSession;
 import com.nashlincoln.blink.content.Syncro;
@@ -13,8 +15,7 @@ import com.nashlincoln.blink.network.BlinkApi;
  * Created by nash on 10/17/14.
  */
 public class BlinkApp extends Application {
-    public static final String PREF_NAME = "blink";
-    public static final String PREF_API_HOST = "api_host";
+    private static String PREF_API_HOST;
     private static BlinkApp sInstance;
 
     private SharedPreferences mPreferences;
@@ -28,7 +29,9 @@ public class BlinkApp extends Application {
     public void onCreate() {
         super.onCreate();
         sInstance = this;
-        mPreferences = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
+        mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+        PREF_API_HOST = getString(R.string.preference_key_host);
 
         DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "blink-db", null);
         SQLiteDatabase db = helper.getWritableDatabase();
@@ -53,12 +56,15 @@ public class BlinkApp extends Application {
     }
 
     public void setHost(String host) {
-        mPreferences.edit().putString(PREF_API_HOST, host).apply();
         BlinkApi.createService(host);
         fetchData();
     }
 
     public String getHost() {
         return mPreferences.getString(PREF_API_HOST, "");
+    }
+
+    public static SharedPreferences getPreferences() {
+        return getApp().mPreferences;
     }
 }

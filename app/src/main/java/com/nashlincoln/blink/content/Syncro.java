@@ -1,5 +1,7 @@
 package com.nashlincoln.blink.content;
 
+import android.util.Log;
+
 import com.nashlincoln.blink.app.BlinkApp;
 import com.nashlincoln.blink.event.Event;
 import com.nashlincoln.blink.model.AttributeDao;
@@ -14,6 +16,8 @@ import com.nashlincoln.blink.network.BlinkApi;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -23,8 +27,10 @@ import retrofit.client.Response;
  * Created by nash on 10/18/14.
  */
 public class Syncro {
+    private static final String TAG = "Syncro";
     private static Syncro sInstance;
     private final DaoSession mDaoSession;
+    private boolean mIsConnected = true;
 
     public static Syncro getInstance() {
         if (sInstance == null) {
@@ -38,6 +44,10 @@ public class Syncro {
     }
 
     public void syncDevices() {
+        if (!mIsConnected) {
+            return;
+        }
+
         final List<Command> commands = new ArrayList<>();
         for (Device device : mDaoSession.getDeviceDao().loadAll()) {
             Command command = null;
@@ -84,6 +94,9 @@ public class Syncro {
     }
 
     public void fetchDeviceTypes() {
+        if (!mIsConnected) {
+            return;
+        }
         BlinkApi.getClient().getDeviceTypes(new Callback<List<DeviceType>>() {
             @Override
             public void success(List<DeviceType> deviceTypes, Response response) {
@@ -99,6 +112,9 @@ public class Syncro {
     }
 
     public void fetchAttributeTypes() {
+        if (!mIsConnected) {
+            return;
+        }
         BlinkApi.getClient().getAttributeTypes(new Callback<List<AttributeType>>() {
             @Override
             public void success(List<AttributeType> attributeTypes, Response response) {
@@ -115,6 +131,9 @@ public class Syncro {
 
 
     public void fetchDevices() {
+        if (!mIsConnected) {
+            return;
+        }
         BlinkApi.getClient().getDevices(new Callback<List<Device>>() {
             @Override
             public void success(final List<Device> devices, Response response) {
@@ -142,6 +161,9 @@ public class Syncro {
     }
 
     public void refreshDevices() {
+        if (!mIsConnected) {
+            return;
+        }
         BlinkApi.getClient().getDevices(new Callback<List<Device>>() {
             @Override
             public void success(final List<Device> devices, Response response) {
@@ -150,20 +172,19 @@ public class Syncro {
                 mDaoSession.runInTx(new Runnable() {
                     @Override
                     public void run() {
-                        // todo: figure out how to clear scope without deleting
-                        mDaoSession.getAttributeDao().queryBuilder()
-                                .where(AttributeDao.Properties.AttributableType.eq(Device.ATTRIBUTABLE_TYPE))
-                                .buildDelete().executeDeleteWithoutDetachingEntities();
-//                        deviceDao.deleteAll();
-
                         for (Device device : devices) {
-                            device.setAttributableType(Device.ATTRIBUTABLE_TYPE);
-                            device.flushAttributes();
-                            device.resetAttributes();
+                            Device current = deviceDao.load(device.getId());
+                            if (current == null) {
+                                device.setAttributableType(Device.ATTRIBUTABLE_TYPE);
+                                device.flushAttributes();
+                                device.resetAttributes();
+                            } else {
+                                current.updateFrom(device);
+                            }
                         }
                     }
                 });
-                deviceDao.insertOrReplaceInTx(devices);
+
                 mDaoSession.clear();
                 Event.broadcast(Device.KEY);
             }
@@ -173,5 +194,22 @@ public class Syncro {
 
             }
         });
+    }
+
+    public synchronized void onConnected(boolean isConnected) {
+        Log.d(TAG, "onConnected: " + isConnected);
+        boolean previous = mIsConnected;
+        mIsConnected = isConnected;
+
+        if (mIsConnected && !previous) {
+            Event.observe(Device.KEY, new Observer() {
+                @Override
+                public void update(Observable observable, Object data) {
+                    Event.ignore(Device.KEY, this);
+                    syncDevices();
+                }
+            });
+            refreshDevices();
+        }
     }
 }

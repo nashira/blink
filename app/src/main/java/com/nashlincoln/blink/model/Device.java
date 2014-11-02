@@ -185,12 +185,25 @@ public class Device {
     // KEEP METHODS - put your custom methods here
     public void flushAttributes() {
         AttributeDao attributeDao = BlinkApp.getDaoSession().getAttributeDao();
-        for (Attribute attribute : attributes) {
+        for (Attribute attribute : getAttributes()) {
             attribute.setAttributableId(id);
             attribute.setAttributableType(ATTRIBUTABLE_TYPE);
 
             attributeDao.insertOrReplace(attribute);
         }
+    }
+
+    public void updateFrom(Device device) {
+        setName(device.getName());
+
+        List<Attribute> attributeList = getAttributes();
+        for (int i = 0; i < attributeList.size(); i++) {
+            Attribute attribute = attributeList.get(i);
+            Attribute other = device.getAttributes().get(i);
+            attribute.setValue(other.getValue());
+            attribute.update();
+        }
+        update();
     }
 
     public void setNominal() {
