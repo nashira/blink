@@ -26,6 +26,7 @@ import com.nashlincoln.blink.content.SceneLoader;
 import com.nashlincoln.blink.content.Syncro;
 import com.nashlincoln.blink.model.Scene;
 import com.nashlincoln.blink.model.SceneDevice;
+import com.nashlincoln.blink.nfc.NfcUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -226,6 +227,11 @@ public class SceneListFragment extends Fragment {
                         scene = (Scene) getItem(position);
                         scene.updateDevices();
                         Syncro.getInstance().syncDevices();
+                        break;
+
+                    case R.id.action_write_nfc:
+                        scene = (Scene) getItem(position);
+                        NfcUtils.stageWrite(getActivity(), scene.toNfc());
                         break;
                 }
                 return false;

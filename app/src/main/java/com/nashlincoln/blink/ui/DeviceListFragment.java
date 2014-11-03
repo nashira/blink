@@ -15,7 +15,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -23,6 +25,8 @@ import com.nashlincoln.blink.R;
 import com.nashlincoln.blink.content.DeviceLoader;
 import com.nashlincoln.blink.content.Syncro;
 import com.nashlincoln.blink.model.Device;
+import com.nashlincoln.blink.model.Group;
+import com.nashlincoln.blink.nfc.NfcUtils;
 
 import java.util.List;
 
@@ -121,7 +125,8 @@ public class DeviceListFragment extends Fragment {
             holder.selfChange = false;
         }
 
-        class Holder implements CompoundButton.OnCheckedChangeListener, SeekBar.OnSeekBarChangeListener {
+        class Holder implements CompoundButton.OnCheckedChangeListener, SeekBar.OnSeekBarChangeListener, View.OnClickListener, PopupMenu.OnMenuItemClickListener {
+            ImageButton settingsButton;
             boolean selfChange;
             int position;
             TextView textView;
@@ -133,6 +138,8 @@ public class DeviceListFragment extends Fragment {
                 textView = (TextView) view.findViewById(R.id.text);
                 toggleView = (SwitchCompat) view.findViewById(R.id.toggle);
                 seekBar = (SeekBar) view.findViewById(R.id.seek_bar);
+                settingsButton = (ImageButton) view.findViewById(R.id.button_settings);
+                settingsButton.setOnClickListener(this);
                 seekBar.setMax(255);
                 toggleView.setOnCheckedChangeListener(this);
                 seekBar.setOnSeekBarChangeListener(this);
@@ -165,6 +172,26 @@ public class DeviceListFragment extends Fragment {
                 Device device = getItem(position);
                 device.setLevel(seekBar.getProgress());
                 Syncro.getInstance().syncDevices();
+            }
+
+            @Override
+            public void onClick(View v) {
+                PopupMenu popup = new PopupMenu(getContext(), v);
+                popup.getMenuInflater().inflate(R.menu.device_item, popup.getMenu());
+                popup.setOnMenuItemClickListener(this);
+                popup.show();
+            }
+
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+
+                    case R.id.action_write_nfc:
+                        Device device = getItem(position);
+                        NfcUtils.stageWrite(getActivity(), device.toNfc());
+                        break;
+                }
+                return false;
             }
         }
     }

@@ -62,7 +62,7 @@ public class NfcUtils {
         PendingIntent pi = PendingIntent.getActivity(activity, 0, nfcIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
         nfcAdapter.enableForegroundDispatch(activity, pi, new IntentFilter[]{tagDetected}, null);
-        Toast.makeText(activity, "Touch NFC Tag to write", Toast.LENGTH_LONG).show();
+        Toast.makeText(activity, "Touch NFC Tag to write", Toast.LENGTH_SHORT).show();
     }
 
     public static void writeTag(final Activity activity, final Intent intent) {

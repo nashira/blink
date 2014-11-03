@@ -2,7 +2,9 @@ package com.nashlincoln.blink.ui;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
@@ -15,6 +17,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.nashlincoln.blink.R;
 import com.nashlincoln.blink.app.BlinkApp;
@@ -56,16 +59,33 @@ public class BlinkActivity extends ActionBarActivity {
             Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
         }
+
+        onNewIntent(getIntent());
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+
         if (intent.hasExtra(BlinkApp.EXTRA_NFC_WRITE)) {
             NfcUtils.writeTag(this, intent);
-        } else {
+        } else if (intent.hasExtra(NfcAdapter.EXTRA_TAG)) {
             NfcUtils.readTag(this, intent);
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(this);
+
+        Intent nfcIntent = new Intent(this, BlinkActivity.class)
+                .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+        PendingIntent pi = PendingIntent.getActivity(this, 0, nfcIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
+        nfcAdapter.enableForegroundDispatch(this, pi, new IntentFilter[]{tagDetected}, null);
     }
 
     @Override

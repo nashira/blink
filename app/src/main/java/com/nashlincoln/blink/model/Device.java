@@ -1,5 +1,6 @@
 package com.nashlincoln.blink.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import com.nashlincoln.blink.model.DaoSession;
 import de.greenrobot.dao.DaoException;
@@ -8,6 +9,8 @@ import de.greenrobot.dao.DaoException;
 
 // KEEP INCLUDES - put your custom includes here
 import com.nashlincoln.blink.app.BlinkApp;
+import com.nashlincoln.blink.network.BlinkApi;
+import com.nashlincoln.blink.nfc.NfcCommand;
 // KEEP INCLUDES END
 /**
  * Entity mapped to table DEVICE.
@@ -238,6 +241,25 @@ public class Device {
 
     public int getLevel() {
         return getAttributes().get(1).getInt();
+    }
+
+    public String toNfc() {
+        List<NfcCommand> commands = new ArrayList<>();
+        List<NfcCommand.Update> updates = new ArrayList<>();
+
+        for (Attribute attribute : getAttributes()) {
+            NfcCommand.Update update = new NfcCommand.Update();
+            update.i = attribute.getAttributeTypeId();
+            update.v = attribute.getValue();
+            updates.add(update);
+        }
+
+        NfcCommand command = new NfcCommand();
+        command.i = getId();
+        command.u = updates;
+        commands.add(command);
+
+        return BlinkApi.getGson().toJson(commands);
     }
     // KEEP METHODS END
 
