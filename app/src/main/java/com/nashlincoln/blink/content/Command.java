@@ -2,7 +2,6 @@ package com.nashlincoln.blink.content;
 
 import com.nashlincoln.blink.model.Attribute;
 import com.nashlincoln.blink.model.Device;
-import com.nashlincoln.blink.model.Group;
 
 import java.util.ArrayList;
 import java.util.List;

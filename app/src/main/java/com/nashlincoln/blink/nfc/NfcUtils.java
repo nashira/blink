@@ -15,7 +15,6 @@ import android.nfc.tech.Ndef;
 import android.nfc.tech.NdefFormatable;
 import android.os.AsyncTask;
 import android.os.Parcelable;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.google.gson.reflect.TypeToken;

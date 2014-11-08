@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="40dp"
+    android:layout_height="40dp"
+    android:background="@drawable/fab_bg"
+    android:elevation="@dimen/button_elevation"
+    android:src="@drawable/ic_done_all_white_24dp"
+    android:stateListAnimator="@anim/fab"
+    tools:showIn="@layout/scene_item" />

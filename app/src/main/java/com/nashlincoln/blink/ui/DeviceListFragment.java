@@ -1,22 +1,17 @@
 package com.nashlincoln.blink.ui;
 
-import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.Context;
 import android.content.Loader;
 import android.os.Bundle;
 import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
-import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -25,30 +20,18 @@ import com.nashlincoln.blink.R;
 import com.nashlincoln.blink.content.DeviceLoader;
 import com.nashlincoln.blink.content.Syncro;
 import com.nashlincoln.blink.model.Device;
-import com.nashlincoln.blink.model.Group;
 import com.nashlincoln.blink.nfc.NfcUtils;
 
 import java.util.List;
 
+
+
 /**
  * Created by nash on 10/19/14.
  */
-public class DeviceListFragment extends Fragment {
+public class DeviceListFragment extends BlinkListFragment {
     private static final String TAG = "DeviceListFragment";
-    private ListView mListView;
     private DeviceAdapter mAdapter;
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mListView = new ListView(inflater.getContext());
-        return mListView;
-    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -56,20 +39,6 @@ public class DeviceListFragment extends Fragment {
         mAdapter = new DeviceAdapter(getActivity());
         mListView.setAdapter(mAdapter);
         getLoaderManager().restartLoader(0, null, mLoaderCallbacks);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.add, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_add) {
-            Log.d(TAG, "add");
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     private LoaderManager.LoaderCallbacks<List<Device>> mLoaderCallbacks = new LoaderManager.LoaderCallbacks<List<Device>>() {

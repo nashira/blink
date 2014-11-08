@@ -3,7 +3,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="12dp">
+    android:padding="@dimen/padding_normal">
 
     <ImageButton
         android:id="@+id/button_settings"
@@ -19,7 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="12dp"
-        android:layout_marginRight="8dp"
+        android:layout_marginRight="@dimen/padding_small"
         android:layout_toLeftOf="@id/button_settings"
         android:ellipsize="end"
         android:maxLines="2"
@@ -37,7 +37,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/text"
-        android:layout_marginLeft="8dp"
+        android:layout_marginLeft="@dimen/padding_small"
         android:layout_toRightOf="@id/toggle" />
 
 </RelativeLayout>

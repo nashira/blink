@@ -3,7 +3,6 @@ package com.nashlincoln.blink.content;
 import android.content.Context;
 
 import com.nashlincoln.blink.app.BlinkApp;
-import com.nashlincoln.blink.model.Device;
 import com.nashlincoln.blink.model.Group;
 
 import java.util.List;

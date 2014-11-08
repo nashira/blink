@@ -7,16 +7,12 @@ import android.content.Loader;
 import android.os.Bundle;
 import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
-import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -34,23 +30,10 @@ import java.util.List;
 /**
  * Created by nash on 10/19/14.
  */
-public class SceneListFragment extends Fragment {
+public class SceneListFragment extends BlinkListFragment {
     private static final String TAG = "SceneListFragment";
     private static final String ADD_FRAG = "add_frag";
-    private ListView mListView;
     private SceneAdapter mAdapter;
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mListView = new ListView(inflater.getContext());
-        return mListView;
-    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -61,22 +44,12 @@ public class SceneListFragment extends Fragment {
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.add, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
+    protected void onFabClick(View view) {
+        DialogFragment fragment =
+                (DialogFragment) Fragment.instantiate(getActivity(), AddSceneDialogFragment.class.getName());
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_add) {
-            DialogFragment fragment =
-                    (DialogFragment) Fragment.instantiate(getActivity(), AddSceneDialogFragment.class.getName());
-
-            fragment.show(getFragmentManager(), ADD_FRAG);
-            Log.d(TAG, "add");
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+        fragment.show(getFragmentManager(), ADD_FRAG);
+        Log.d(TAG, "add");
     }
 
     private LoaderManager.LoaderCallbacks<List<Scene>> mLoaderCallbacks = new LoaderManager.LoaderCallbacks<List<Scene>>() {

@@ -7,9 +7,9 @@ import android.preference.PreferenceManager;
 
 import com.nashlincoln.blink.BuildConfig;
 import com.nashlincoln.blink.R;
+import com.nashlincoln.blink.content.Syncro;
 import com.nashlincoln.blink.model.DaoMaster;
 import com.nashlincoln.blink.model.DaoSession;
-import com.nashlincoln.blink.content.Syncro;
 import com.nashlincoln.blink.network.BlinkApi;
 
 /**

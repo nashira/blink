@@ -1,13 +1,10 @@
 package com.nashlincoln.blink.content;
 
-import android.content.ContentResolver;
-import android.database.ContentObserver;
 import android.util.Log;
 
 import com.nashlincoln.blink.app.BlinkApp;
 import com.nashlincoln.blink.event.Event;
 import com.nashlincoln.blink.model.Attribute;
-import com.nashlincoln.blink.model.AttributeDao;
 import com.nashlincoln.blink.model.AttributeType;
 import com.nashlincoln.blink.model.AttributeTypeDao;
 import com.nashlincoln.blink.model.DaoSession;

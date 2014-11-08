@@ -1,8 +1,5 @@
 package com.nashlincoln.blink.nfc;
 
-import com.nashlincoln.blink.model.Group;
-
-import java.util.ArrayList;
 import java.util.List;
 
 /**
