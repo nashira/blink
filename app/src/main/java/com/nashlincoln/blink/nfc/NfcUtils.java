@@ -51,16 +51,17 @@ public class NfcUtils {
     }
 
     public static void stageWrite(Activity activity, String data) {
-        NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(activity);
 
-        Intent nfcIntent = new Intent(activity, BlinkActivity.class)
-                .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-
+        Intent nfcIntent = new Intent(activity, BlinkActivity.class);
         nfcIntent.putExtra(BlinkApp.EXTRA_NFC_WRITE, true);
         nfcIntent.putExtra(Intent.EXTRA_TEXT, data);
-        PendingIntent pi = PendingIntent.getActivity(activity, 0, nfcIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
-        nfcAdapter.enableForegroundDispatch(activity, pi, new IntentFilter[]{tagDetected}, null);
+
+        NfcAdapter.getDefaultAdapter(activity).enableForegroundDispatch(
+                activity,
+                PendingIntent.getActivity(activity, 0, nfcIntent, PendingIntent.FLAG_UPDATE_CURRENT),
+                new IntentFilter[]{new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED)},
+                null);
+
         Toast.makeText(activity, "Touch NFC Tag to write", Toast.LENGTH_SHORT).show();
     }
 

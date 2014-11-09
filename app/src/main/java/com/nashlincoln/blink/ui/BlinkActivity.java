@@ -82,22 +82,17 @@ public class BlinkActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
-        NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(this);
-
-        Intent nfcIntent = new Intent(this, BlinkActivity.class)
-                .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-
-        PendingIntent pi = PendingIntent.getActivity(this, 0, nfcIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
-        nfcAdapter.enableForegroundDispatch(this, pi, new IntentFilter[]{tagDetected}, null);
+        NfcAdapter.getDefaultAdapter(this).enableForegroundDispatch(
+                this,
+                PendingIntent.getActivity(this, 0, new Intent(this, BlinkActivity.class), PendingIntent.FLAG_UPDATE_CURRENT),
+                new IntentFilter[]{new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED)},
+                null);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(this);
-        nfcAdapter.disableForegroundDispatch(this);
+        NfcAdapter.getDefaultAdapter(this).disableForegroundDispatch(this);
     }
 
     @Override
@@ -123,7 +118,6 @@ public class BlinkActivity extends ActionBarActivity {
     }
 
     class FragmentAdapter extends FragmentPagerAdapter {
-
 
         public FragmentAdapter(FragmentManager fm) {
             super(fm);
@@ -163,8 +157,7 @@ public class BlinkActivity extends ActionBarActivity {
                     className = SceneListFragment.class.getName();
                     break;
             }
-            Fragment fragment = Fragment.instantiate(BlinkActivity.this, className);
-            return fragment;
+            return Fragment.instantiate(BlinkActivity.this, className);
         }
     }
 }
