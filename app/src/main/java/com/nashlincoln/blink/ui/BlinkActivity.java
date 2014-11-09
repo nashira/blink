@@ -7,13 +7,17 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.nfc.NfcAdapter;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 
+import com.nashlincoln.blink.BuildConfig;
 import com.nashlincoln.blink.R;
 import com.nashlincoln.blink.app.BlinkApp;
 import com.nashlincoln.blink.app.FragmentPagerAdapter;
@@ -43,7 +47,13 @@ public class BlinkActivity extends ActionBarActivity {
         mViewPager.setAdapter(new FragmentAdapter(getFragmentManager()));
 
         mSlidingTabLayout = (SlidingTabLayout) findViewById(R.id.sliding_tabs);
+        mSlidingTabLayout.setBackgroundResource(R.color.primary);
+
         mSlidingTabLayout.setCustomTabView(R.layout.tab_indicator, android.R.id.text1);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mSlidingTabLayout.setElevation(getResources().getDimensionPixelSize(R.dimen.toolbar_elevation));
+        }
 
         Resources res = getResources();
         mSlidingTabLayout.setSelectedIndicatorColors(res.getColor(R.color.accent));
