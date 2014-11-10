@@ -159,19 +159,23 @@ public class SceneDevice {
 
     // KEEP METHODS - put your custom methods here
 
-    public void copyAttributes(List<Attribute> attributes) {
-        AttributeDao attributeDao = BlinkApp.getDaoSession().getAttributeDao();
-        for (Attribute attribute : attributes) {
-
-            Attribute attr = new Attribute();
-            attr.setAttributableType(ATTRIBUTABLE_TYPE);
-            attr.setAttributableId(getId());
-            attr.setAttributeType(attribute.getAttributeType());
-            attr.setValue(attribute.getValue());
-            attributeDao.insert(attr);
-            getAttributes().add(attr);
-        }
-        resetAttributes();
+    public void copyAttributes(final List<Attribute> attributes) {
+        BlinkApp.getDaoSession().runInTx(new Runnable() {
+            @Override
+            public void run() {
+                AttributeDao attributeDao = BlinkApp.getDaoSession().getAttributeDao();
+                for (Attribute attribute : attributes) {
+                    Attribute attr = new Attribute();
+                    attr.setAttributableType(ATTRIBUTABLE_TYPE);
+                    attr.setAttributableId(getId());
+                    attr.setAttributeType(attribute.getAttributeType());
+                    attr.setValue(attribute.getValue());
+                    attributeDao.insert(attr);
+                    getAttributes().add(attr);
+                }
+                resetAttributes();
+            }
+        });
     }
 
     public void setLevel(final int level) {
@@ -200,5 +204,4 @@ public class SceneDevice {
         return sceneDevice;
     }
     // KEEP METHODS END
-
 }

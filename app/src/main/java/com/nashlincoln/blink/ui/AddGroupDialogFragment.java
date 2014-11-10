@@ -62,16 +62,21 @@ public class AddGroupDialogFragment extends DialogFragment {
                             return;
                         }
 
-                        group.setName(TextUtils.join(", ", joinedName));
-                        BlinkApp.getDaoSession().getGroupDao().insert(group);
-                        GroupDeviceDao groupDeviceDao = BlinkApp.getDaoSession().getGroupDeviceDao();
-                        for (GroupDevice groupDevice : groupDevices.values()) {
-                            groupDevice.setGroupId(group.getId());
-                            groupDeviceDao.insert(groupDevice);
-                        }
-                        group.copyAttributes(devices.get(0).getAttributes());
-                        group.resetGroupDeviceList();
-                        Event.broadcast(Group.KEY);
+                        BlinkApp.getDaoSession().runInTx(new Runnable() {
+                            @Override
+                            public void run() {
+                                group.setName(TextUtils.join(", ", joinedName));
+                                BlinkApp.getDaoSession().getGroupDao().insert(group);
+                                GroupDeviceDao groupDeviceDao = BlinkApp.getDaoSession().getGroupDeviceDao();
+                                for (GroupDevice groupDevice : groupDevices.values()) {
+                                    groupDevice.setGroupId(group.getId());
+                                    groupDeviceDao.insert(groupDevice);
+                                }
+                                group.copyAttributes(devices.get(0).getAttributes());
+                                group.resetGroupDeviceList();
+                                Event.broadcast(Group.KEY);
+                            }
+                        });
                     }
                 })
                 .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {

@@ -12,12 +12,9 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewGroup;
 
-import com.nashlincoln.blink.BuildConfig;
 import com.nashlincoln.blink.R;
 import com.nashlincoln.blink.app.BlinkApp;
 import com.nashlincoln.blink.app.FragmentPagerAdapter;

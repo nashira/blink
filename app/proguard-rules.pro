@@ -33,6 +33,11 @@
 -dontwarn java.nio.file.*
 -dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
 
+-keepclassmembers class * extends de.greenrobot.dao.AbstractDao {
+    public static java.lang.String TABLENAME;
+}
+-keep class **$Properties
+
 -dontwarn com.google.common.**
 # Don't discard Guava classes that raise warnings
 -keep class com.google.common.collect.MapMakerInternalMap$ReferenceEntry

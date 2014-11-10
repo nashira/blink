@@ -81,9 +81,14 @@ public class Syncro {
             BlinkApi.getClient().sendCommands(commands, new Callback<Response>() {
                 @Override
                 public void success(Response response, Response response2) {
-                    for (Command command : commands) {
-                        command.device.setNominal();
-                    }
+                    BlinkApp.getDaoSession().runInTx(new Runnable() {
+                        @Override
+                        public void run() {
+                            for (Command command : commands) {
+                                command.device.setNominal();
+                            }
+                        }
+                    });
                     Event.broadcast(Device.KEY);
                 }
 
@@ -147,10 +152,10 @@ public class Syncro {
                             device.setAttributableType(Device.ATTRIBUTABLE_TYPE);
                             device.flushAttributes();
                             device.resetAttributes();
+                            deviceDao.insertOrReplace(device);
                         }
                     }
                 });
-                deviceDao.insertOrReplaceInTx(devices);
                 mDaoSession.clear();
                 Event.broadcast(Device.KEY);
             }
@@ -234,8 +239,8 @@ public class Syncro {
                         }
                     }
                 }
-                syncDevices();
             }
         });
+        syncDevices();
     }
 }

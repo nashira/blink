@@ -43,25 +43,29 @@ public class AddSceneDialogFragment extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.device_selector_title);
         builder.setMultiChoiceItems(names, checked, new DialogInterface.OnMultiChoiceClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-                    if (isChecked) {
-                        SceneDevice sceneDevice = SceneDevice.newInstance();
-                        sceneDevice.setDeviceId(devices.get(which).getId());
-                        sceneDevices.put(which, sceneDevice);
-                        joinedName.add(devices.get(which).getName());
-                    } else {
-                        sceneDevices.remove(which);
-                        joinedName.remove(devices.get(which).getName());
-                    }
-                }})
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        if (sceneDevices.isEmpty()) {
-                            return;
+                    public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                        if (isChecked) {
+                            SceneDevice sceneDevice = SceneDevice.newInstance();
+                            sceneDevice.setDeviceId(devices.get(which).getId());
+                            sceneDevices.put(which, sceneDevice);
+                            joinedName.add(devices.get(which).getName());
+                        } else {
+                            sceneDevices.remove(which);
+                            joinedName.remove(devices.get(which).getName());
                         }
+                    }
+                }
+        ).setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if (sceneDevices.isEmpty()) {
+                    return;
+                }
 
+                BlinkApp.getDaoSession().runInTx(new Runnable() {
+                    @Override
+                    public void run() {
                         scene.setName(TextUtils.join(", ", joinedName));
                         BlinkApp.getDaoSession().getSceneDao().insert(scene);
                         SceneDeviceDao sceneDeviceDao = BlinkApp.getDaoSession().getSceneDeviceDao();
@@ -73,13 +77,14 @@ public class AddSceneDialogFragment extends DialogFragment {
                         scene.resetSceneDeviceList();
                         Event.broadcast(Scene.KEY);
                     }
-                })
-                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        // User declined.
-                    }
                 });
+            }
+        }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                // User declined.
+            }
+        });
         return builder.create();
     }
 }
