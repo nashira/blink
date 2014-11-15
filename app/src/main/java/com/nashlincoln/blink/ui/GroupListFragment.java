@@ -1,9 +1,11 @@
 package com.nashlincoln.blink.ui;
 
+import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.Loader;
 import android.os.Bundle;
 import android.support.v7.widget.SwitchCompat;
@@ -19,9 +21,16 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.nashlincoln.blink.R;
+import com.nashlincoln.blink.app.BlinkApp;
 import com.nashlincoln.blink.content.GroupLoader;
 import com.nashlincoln.blink.content.Syncro;
+import com.nashlincoln.blink.event.Event;
+import com.nashlincoln.blink.model.DaoSession;
+import com.nashlincoln.blink.model.Device;
 import com.nashlincoln.blink.model.Group;
+import com.nashlincoln.blink.model.GroupDevice;
+import com.nashlincoln.blink.model.Scene;
+import com.nashlincoln.blink.model.SceneDevice;
 import com.nashlincoln.blink.nfc.NfcUtils;
 
 import java.util.List;
@@ -31,7 +40,8 @@ import java.util.List;
  */
 public class GroupListFragment extends BlinkListFragment {
     private static final String TAG = "GroupListFragment";
-    private static final String ADD_FRAG = "add_frag";
+    private static final int REQUEST_EDIT = 123;
+    private static final int REQUEST_ADD = 124;
     private GroupAdapter mAdapter;
 
     @Override
@@ -45,11 +55,76 @@ public class GroupListFragment extends BlinkListFragment {
     @Override
     protected void onFabClick(View view) {
 
-        DialogFragment fragment =
-                (DialogFragment) Fragment.instantiate(getActivity(), AddGroupDialogFragment.class.getName());
+        Intent intent = getAddEditIntent(null);
+        startActivityForResult(intent, REQUEST_ADD);
+    }
 
-        fragment.show(getFragmentManager(), ADD_FRAG);
-        Log.d(TAG, "add");
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d(TAG, "" + requestCode + " " + resultCode);
+        final DaoSession daoSession = BlinkApp.getDaoSession();
+
+        if (requestCode == REQUEST_EDIT && resultCode == Activity.RESULT_OK && data != null) {
+            final String name = data.getStringExtra(BlinkApp.EXTRA_NAME);
+            final long[] ids = data.getLongArrayExtra(BlinkApp.EXTRA_DEVICE_IDS);
+            final long id = data.getLongExtra(BlinkApp.EXTRA_ID, -1);
+
+            if (ids == null || ids.length < 1) {
+                return;
+            }
+
+            daoSession.runInTx(new Runnable() {
+                @Override
+                public void run() {
+                    Group group = daoSession.getGroupDao().load(id);
+                    group.setName(name);
+                    group.setDeviceIds(ids);
+                    group.update();
+                    group.resetGroupDeviceList();
+                    Event.broadcast(Group.KEY);
+                }
+            });
+        } else if (requestCode == REQUEST_ADD && resultCode == Activity.RESULT_OK && data != null) {
+            final String name = data.getStringExtra(BlinkApp.EXTRA_NAME);
+            final long[] ids = data.getLongArrayExtra(BlinkApp.EXTRA_DEVICE_IDS);
+
+            if (ids == null || ids.length < 1) {
+                return;
+            }
+
+            daoSession.runInTx(new Runnable() {
+                @Override
+                public void run() {
+                    Group group = Group.newInstance();
+                    group.setName(name);
+                    daoSession.getGroupDao().insert(group);
+                    for (long id : ids) {
+                        group.addDevice(id);
+                    }
+                    Device device = daoSession.getDeviceDao().load(ids[0]);
+                    group.copyAttributes(device.getAttributes());
+                    group.resetGroupDeviceList();
+                    Event.broadcast(Group.KEY);
+                }
+            });
+        }
+    }
+
+    private Intent getAddEditIntent(Group group) {
+        Intent intent = new Intent(getActivity(), EditListActivity.class);
+        if (group != null) {
+            intent.putExtra(BlinkApp.EXTRA_ID, group.getId());
+            intent.putExtra(BlinkApp.EXTRA_NAME, group.getName());
+            long[] deviceIds = new long[group.getGroupDeviceList().size()];
+            int index = 0;
+            for (GroupDevice groupDevice : group.getGroupDeviceList()) {
+                deviceIds[index++] = groupDevice.getDeviceId();
+            }
+
+            intent.putExtra(BlinkApp.EXTRA_DEVICE_IDS, deviceIds);
+        }
+        return intent;
     }
 
     private LoaderManager.LoaderCallbacks<List<Group>> mLoaderCallbacks = new LoaderManager.LoaderCallbacks<List<Group>>() {
@@ -171,6 +246,11 @@ public class GroupListFragment extends BlinkListFragment {
                     case R.id.action_remove:
                         Group group = getItem(position);
                         group.deleteWithReferences();
+                        break;
+
+                    case R.id.action_edit:
+                        Intent intent = getAddEditIntent(getItem(position));
+                        startActivityForResult(intent, REQUEST_EDIT);
                         break;
 
                     case R.id.action_sync:

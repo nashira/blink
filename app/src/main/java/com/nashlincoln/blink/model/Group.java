@@ -6,7 +6,9 @@ import com.nashlincoln.blink.network.BlinkApi;
 import com.nashlincoln.blink.nfc.NfcCommand;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import de.greenrobot.dao.DaoException;
 
@@ -270,6 +272,42 @@ public class Group {
         }
 
         return BlinkApi.getGson().toJson(commands);
+    }
+
+    public void removeDevice(final long deviceId) {
+        for (GroupDevice groupDevice : getGroupDeviceList()) {
+            if (groupDevice.getDeviceId() == deviceId) {
+                groupDevice.delete();
+            }
+        }
+    }
+
+    public void addDevice(long deviceId) {
+        DeviceDao deviceDao = daoSession.getDeviceDao();
+        Device device = deviceDao.load(deviceId);
+        GroupDevice groupDevice = new GroupDevice();
+        groupDevice.setDeviceId(device.getId());
+        groupDevice.setGroupId(id);
+        daoSession.getGroupDeviceDao().insert(groupDevice);
+    }
+
+    public void setDeviceIds(long[] deviceIds) {
+        Set<Long> deviceSet = new HashSet<>();
+        for (long deviceId : deviceIds) {
+            deviceSet.add(deviceId);
+        }
+
+        for (GroupDevice groupDevice : getGroupDeviceList()) {
+            if (deviceSet.contains(groupDevice.getDeviceId())) {
+                deviceSet.remove(groupDevice.getDeviceId());
+            } else {
+                groupDevice.delete();
+            }
+        }
+
+        for (Long deviceId : deviceSet) {
+            addDevice(deviceId);
+        }
     }
     // KEEP METHODS END
 

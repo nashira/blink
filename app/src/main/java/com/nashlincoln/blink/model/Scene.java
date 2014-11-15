@@ -6,7 +6,9 @@ import com.nashlincoln.blink.network.BlinkApi;
 import com.nashlincoln.blink.nfc.NfcCommand;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import de.greenrobot.dao.DaoException;
 
@@ -166,6 +168,50 @@ public class Scene {
         }
 
         return BlinkApi.getGson().toJson(commands);
+    }
+
+    public void removeDevice(final long deviceId) {
+        for (SceneDevice sceneDevice : getSceneDeviceList()) {
+            if (sceneDevice.getDeviceId() == deviceId) {
+                deleteSceneDevice(sceneDevice);
+            }
+        }
+    }
+
+    public void deleteSceneDevice(SceneDevice sceneDevice) {
+        for (Attribute attribute : sceneDevice.getAttributes()) {
+            attribute.delete();
+        }
+        sceneDevice.delete();
+    }
+
+    public void addDevice(long deviceId) {
+        DeviceDao deviceDao = daoSession.getDeviceDao();
+        Device device = deviceDao.load(deviceId);
+        SceneDevice sceneDevice = SceneDevice.newInstance();
+        sceneDevice.setDeviceId(device.getId());
+        sceneDevice.setSceneId(id);
+        daoSession.getSceneDeviceDao().insert(sceneDevice);
+        sceneDevice.copyAttributes(device.getAttributes());
+    }
+
+    public void setDeviceIds(long[] deviceIds) {
+        Set<Long> deviceSet = new HashSet<>();
+        for (long deviceId : deviceIds) {
+            deviceSet.add(deviceId);
+        }
+
+        for (SceneDevice sceneDevice : getSceneDeviceList()) {
+            if (deviceSet.contains(sceneDevice.getDeviceId())) {
+                deviceSet.remove(sceneDevice.getDeviceId());
+            } else {
+                deleteSceneDevice(sceneDevice);
+            }
+        }
+
+        for (Long deviceId : deviceSet) {
+            addDevice(deviceId);
+        }
     }
     // KEEP METHODS END
 

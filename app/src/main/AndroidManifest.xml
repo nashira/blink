@@ -36,6 +36,11 @@
             android:label="@string/title_settings"
             android:parentActivityName=".ui.BlinkActivity"/>
 
+        <activity
+            android:name=".ui.EditListActivity"
+            android:label="@string/title_edit"
+            android:parentActivityName=".ui.BlinkActivity"/>
+
         <receiver android:name=".app.NetworkReceiver">
 
             <intent-filter>

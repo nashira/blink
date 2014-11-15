@@ -33,8 +33,6 @@ public class BlinkListFragment extends Fragment implements View.OnClickListener 
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mAddButton.setOnClickListener(this);
-
-
     }
 
     protected void onFabClick(View view) {

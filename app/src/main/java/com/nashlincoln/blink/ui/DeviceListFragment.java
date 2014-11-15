@@ -41,6 +41,11 @@ public class DeviceListFragment extends BlinkListFragment {
         getLoaderManager().restartLoader(0, null, mLoaderCallbacks);
     }
 
+    @Override
+    protected void onFabClick(View view) {
+
+    }
+
     private LoaderManager.LoaderCallbacks<List<Device>> mLoaderCallbacks = new LoaderManager.LoaderCallbacks<List<Device>>() {
         @Override
         public Loader<List<Device>> onCreateLoader(int i, Bundle bundle) {

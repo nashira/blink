@@ -23,5 +23,10 @@
     <string name="summary_preference_ssid">The network ssid that the hub is on</string>
     <string name="default_ssid">bokonon</string>
     <string name="action_write_nfc">Write to NFC</string>
+    <string name="action_edit">Edit</string>
+    <string name="edit_name">Name</string>
+    <string name="title_edit">Add/Edit</string>
+    <string name="action_save">Save</string>
+    <string name="action_delete">Delete</string>
 
 </resources>

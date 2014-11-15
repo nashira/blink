@@ -1,8 +1,10 @@
 package com.nashlincoln.blink.ui;
 
+import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.LoaderManager;
+import android.content.Intent;
 import android.content.Loader;
 import android.os.Bundle;
 import android.support.v7.widget.SwitchCompat;
@@ -18,10 +20,16 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.nashlincoln.blink.R;
+import com.nashlincoln.blink.app.BlinkApp;
 import com.nashlincoln.blink.content.SceneLoader;
 import com.nashlincoln.blink.content.Syncro;
+import com.nashlincoln.blink.event.Event;
+import com.nashlincoln.blink.model.DaoSession;
+import com.nashlincoln.blink.model.Device;
+import com.nashlincoln.blink.model.DeviceDao;
 import com.nashlincoln.blink.model.Scene;
 import com.nashlincoln.blink.model.SceneDevice;
+import com.nashlincoln.blink.model.SceneDeviceDao;
 import com.nashlincoln.blink.nfc.NfcUtils;
 
 import java.util.ArrayList;
@@ -32,7 +40,8 @@ import java.util.List;
  */
 public class SceneListFragment extends BlinkListFragment {
     private static final String TAG = "SceneListFragment";
-    private static final String ADD_FRAG = "add_frag";
+    private static final int REQUEST_EDIT = 123;
+    private static final int REQUEST_ADD = 124;
     private SceneAdapter mAdapter;
 
     @Override
@@ -45,11 +54,8 @@ public class SceneListFragment extends BlinkListFragment {
 
     @Override
     protected void onFabClick(View view) {
-        DialogFragment fragment =
-                (DialogFragment) Fragment.instantiate(getActivity(), AddSceneDialogFragment.class.getName());
-
-        fragment.show(getFragmentManager(), ADD_FRAG);
-        Log.d(TAG, "add");
+        Intent intent = getAddEditIntent(null);
+        startActivityForResult(intent, REQUEST_ADD);
     }
 
     private LoaderManager.LoaderCallbacks<List<Scene>> mLoaderCallbacks = new LoaderManager.LoaderCallbacks<List<Scene>>() {
@@ -68,6 +74,72 @@ public class SceneListFragment extends BlinkListFragment {
 
         }
     };
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d(TAG, "" + requestCode + " " + resultCode);
+        final DaoSession daoSession = BlinkApp.getDaoSession();
+
+        if (requestCode == REQUEST_EDIT && resultCode == Activity.RESULT_OK && data != null) {
+            final String name = data.getStringExtra(BlinkApp.EXTRA_NAME);
+            final long[] ids = data.getLongArrayExtra(BlinkApp.EXTRA_DEVICE_IDS);
+            final long id = data.getLongExtra(BlinkApp.EXTRA_ID, -1);
+
+            if (ids == null || ids.length < 1) {
+                return;
+            }
+
+            daoSession.runInTx(new Runnable() {
+                @Override
+                public void run() {
+                    Scene scene = daoSession.getSceneDao().load(id);
+                    scene.setName(name);
+                    scene.setDeviceIds(ids);
+                    scene.update();
+                    scene.resetSceneDeviceList();
+                    Event.broadcast(Scene.KEY);
+                }
+            });
+        } else if (requestCode == REQUEST_ADD && resultCode == Activity.RESULT_OK && data != null) {
+            final String name = data.getStringExtra(BlinkApp.EXTRA_NAME);
+            final long[] ids = data.getLongArrayExtra(BlinkApp.EXTRA_DEVICE_IDS);
+
+            if (ids == null || ids.length < 1) {
+                return;
+            }
+
+            daoSession.runInTx(new Runnable() {
+                @Override
+                public void run() {
+                    Scene scene = new Scene();
+                    scene.setName(name);
+                    daoSession.getSceneDao().insert(scene);
+                    for (long id : ids) {
+                        scene.addDevice(id);
+                    }
+                    scene.resetSceneDeviceList();
+                    Event.broadcast(Scene.KEY);
+                }
+            });
+        }
+    }
+
+    private Intent getAddEditIntent(Scene scene) {
+        Intent intent = new Intent(getActivity(), EditListActivity.class);
+        if (scene != null) {
+            intent.putExtra(BlinkApp.EXTRA_ID, scene.getId());
+            intent.putExtra(BlinkApp.EXTRA_NAME, scene.getName());
+            long[] deviceIds = new long[scene.getSceneDeviceList().size()];
+            int index = 0;
+            for (SceneDevice sceneDevice : scene.getSceneDeviceList()) {
+                deviceIds[index++] = sceneDevice.getDeviceId();
+            }
+
+            intent.putExtra(BlinkApp.EXTRA_DEVICE_IDS, deviceIds);
+        }
+        return intent;
+    }
 
     class SceneAdapter extends BaseAdapter {
 
@@ -190,23 +262,28 @@ public class SceneListFragment extends BlinkListFragment {
 
             @Override
             public boolean onMenuItemClick(MenuItem item) {
+                Scene scene = (Scene) getItem(position);
+
                 switch (item.getItemId()) {
                     case R.id.action_remove:
-                        Scene scene = (Scene) getItem(position);
                         scene.deleteWithReferences();
                         break;
 
+                    case R.id.action_edit:
+                        Intent intent = getAddEditIntent(scene);
+                        startActivityForResult(intent, REQUEST_EDIT);
+                        break;
+
                     case R.id.action_sync:
-                        scene = (Scene) getItem(position);
                         scene.updateDevices();
                         Syncro.getInstance().syncDevices();
                         break;
 
                     case R.id.action_write_nfc:
-                        scene = (Scene) getItem(position);
                         NfcUtils.stageWrite(getActivity(), scene.toNfc());
                         break;
                 }
+
                 return false;
             }
         }

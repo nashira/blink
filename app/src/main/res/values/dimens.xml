@@ -9,5 +9,6 @@
     <dimen name="list_bottom">72dp</dimen>
     <dimen name="padding_normal">16dp</dimen>
     <dimen name="padding_small">8dp</dimen>
-    <dimen name="toolbar_elevation">6dp</dimen>
+    <dimen name="toolbar_elevation">2dp</dimen>
+    <dimen name="padding_large">32dp</dimen>
 </resources>
