@@ -1,5 +1,7 @@
 package com.nashlincoln.blink.ui;
 
+import android.app.DialogFragment;
+import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.Context;
 import android.content.Loader;
@@ -158,10 +160,17 @@ public class DeviceListFragment extends BlinkListFragment {
 
             @Override
             public boolean onMenuItemClick(MenuItem item) {
+                Device device;
                 switch (item.getItemId()) {
 
+                    case R.id.action_edit:
+                        device = getItem(position);
+                        DialogFragment fragment = EditNameDialogFragment.newInstance(device.getId());
+                        fragment.show(getFragmentManager(), "edit");
+                        break;
+
                     case R.id.action_write_nfc:
-                        Device device = getItem(position);
+                        device = getItem(position);
                         NfcUtils.stageWrite(getActivity(), device.toNfc());
                         break;
                 }

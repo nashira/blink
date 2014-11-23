@@ -42,6 +42,7 @@ public class Device {
     public static final int STATE_ADDED = 1;
     public static final int STATE_REMOVED = 2;
     public static final int STATE_UPDATED = 3;
+    public static final int STATE_NAME_SET = 4;
     // KEEP FIELDS END
 
     public Device() {
@@ -186,36 +187,35 @@ public class Device {
     }
 
     // KEEP METHODS - put your custom methods here
-    public void flushAttributes() {
-//        BlinkApp.getDaoSession().runInTx(new Runnable() {
-//            @Override
-//            public void run() {
-                AttributeDao attributeDao = BlinkApp.getDaoSession().getAttributeDao();
-                for (Attribute attribute : getAttributes()) {
-                    attribute.setAttributableId(id);
-                    attribute.setAttributableType(ATTRIBUTABLE_TYPE);
 
-                    attributeDao.insertOrReplace(attribute);
-                }
-//            }
-//        });
+    public void setName(String name, boolean sync) {
+        setName(name);
+        if (sync) {
+            state = STATE_NAME_SET;
+            update();
+        }
+    }
+
+    public void flushAttributes() {
+        AttributeDao attributeDao = BlinkApp.getDaoSession().getAttributeDao();
+        for (Attribute attribute : getAttributes()) {
+            attribute.setAttributableId(id);
+            attribute.setAttributableType(ATTRIBUTABLE_TYPE);
+
+            attributeDao.insertOrReplace(attribute);
+        }
     }
 
     public void updateFrom(final Device device) {
-//        BlinkApp.getDaoSession().runInTx(new Runnable() {
-//            @Override
-//            public void run() {
-                setName(device.getName());
-                List<Attribute> attributeList = getAttributes();
-                for (int i = 0; i < attributeList.size(); i++) {
-                    Attribute attribute = attributeList.get(i);
-                    Attribute other = device.getAttributes().get(i);
-                    attribute.setValue(other.getValue());
-                    attribute.update();
-                }
-                update();
-//            }
-//        });
+        setName(device.getName());
+        List<Attribute> attributeList = getAttributes();
+        for (int i = 0; i < attributeList.size(); i++) {
+            Attribute attribute = attributeList.get(i);
+            Attribute other = device.getAttributes().get(i);
+            attribute.setValue(other.getValue());
+            attribute.update();
+        }
+        update();
     }
 
     public void setNominal() {

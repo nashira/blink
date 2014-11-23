@@ -67,8 +67,12 @@ public class Syncro {
 
                 case Device.STATE_UPDATED:
                     command = Command.update(device);
-
                     break;
+
+                case Device.STATE_NAME_SET:
+                    command = Command.setName(device);
+                    break;
+
                 case Device.STATE_NOMINAL:
                     break;
             }

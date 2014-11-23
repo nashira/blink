@@ -13,6 +13,7 @@ public class Command {
     private static final String ADD = "add";
     private static final String REMOVE = "remove";
     private static final String UPDATE = "update";
+    private static final String SET_NAME = "set-name";
     public long id;
     public String action;
     public String name;
@@ -47,6 +48,15 @@ public class Command {
                 command.updates.add(new Update(attribute));
             }
         }
+        return command;
+    }
+
+    public static Command setName(Device device) {
+        Command command = new Command();
+        command.device = device;
+        command.action = SET_NAME;
+        command.id = device.getId();
+        command.name = device.getName();
         return command;
     }
 

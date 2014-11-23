@@ -171,6 +171,7 @@ public class Attribute {
             value = valueLocal;
             valueLocal = null;
         }
+        // TODO: move this under the if?
         update();
     }
 
