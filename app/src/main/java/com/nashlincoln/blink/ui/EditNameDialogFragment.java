@@ -6,8 +6,10 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.EditText;
 
+import com.nashlincoln.blink.R;
 import com.nashlincoln.blink.app.BlinkApp;
 import com.nashlincoln.blink.content.Syncro;
 import com.nashlincoln.blink.model.Device;
@@ -42,12 +44,13 @@ public class EditNameDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        nameView = new EditText(getActivity());
+        View header =  View.inflate(getActivity(), R.layout.edit_text_dialog, null);
+        nameView = (EditText) header.findViewById(R.id.edit_text);
         if (mDevice != null) {
             nameView.setText(mDevice.getName());
         }
         builder.setTitle("Name")
-                .setView(nameView)
+                .setView(header)
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {

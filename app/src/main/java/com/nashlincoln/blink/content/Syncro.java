@@ -189,6 +189,7 @@ public class Syncro {
                                 device.setAttributableType(Device.ATTRIBUTABLE_TYPE);
                                 device.flushAttributes();
                                 device.resetAttributes();
+                                deviceDao.insertOrReplace(device);
                             } else {
                                 current.updateFrom(device);
                             }

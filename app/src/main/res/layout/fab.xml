@@ -4,10 +4,8 @@
     android:id="@+id/fab"
     android:layout_width="56dp"
     android:layout_height="56dp"
-    android:layout_gravity="end|bottom"
+    android:layout_gravity="center_horizontal|bottom"
     android:layout_marginBottom="16dp"
-    android:layout_marginEnd="16dp"
-    android:layout_marginRight="16dp"
     android:background="@drawable/fab_bg"
     android:src="@drawable/ic_add_white_24dp"
     tools:showIn="@layout/fragment_list" />

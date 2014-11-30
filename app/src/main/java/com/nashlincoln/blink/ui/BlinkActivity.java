@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -36,26 +37,29 @@ public class BlinkActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_blink);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-
         toolbar.setTitleTextColor(0xffffffff);
         setSupportActionBar(toolbar);
 
         mViewPager = (ViewPager) findViewById(R.id.view_pager);
         mViewPager.setAdapter(new FragmentAdapter(getFragmentManager()));
 
-        mSlidingTabLayout = (SlidingTabLayout) findViewById(R.id.sliding_tabs);
-        mSlidingTabLayout.setBackgroundResource(R.color.primary);
+//        mSlidingTabLayout = (SlidingTabLayout) findViewById(R.id.sliding_tabs);
+        mSlidingTabLayout = new SlidingTabLayout(this);
+//        mSlidingTabLayout.setBackgroundResource(R.color.primary);
 
         mSlidingTabLayout.setCustomTabView(R.layout.tab_indicator, android.R.id.text1);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            mSlidingTabLayout.setElevation(getResources().getDimensionPixelSize(R.dimen.toolbar_elevation));
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//            mSlidingTabLayout.setElevation(getResources().getDimensionPixelSize(R.dimen.toolbar_elevation));
+//        }
 
         Resources res = getResources();
-        mSlidingTabLayout.setSelectedIndicatorColors(res.getColor(R.color.accent));
+//        mSlidingTabLayout.setSelectedIndicatorColors(res.getColor(R.color.accent));
         mSlidingTabLayout.setDistributeEvenly(true);
         mSlidingTabLayout.setViewPager(mViewPager);
+
+        Toolbar.LayoutParams params = new Toolbar.LayoutParams(Gravity.BOTTOM);
+        toolbar.addView(mSlidingTabLayout, params);
 
         if (!BlinkApp.getApp().isConfigured()) {
             Intent intent = new Intent(this, SettingsActivity.class);
@@ -79,17 +83,23 @@ public class BlinkActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        NfcAdapter.getDefaultAdapter(this).enableForegroundDispatch(
-                this,
-                PendingIntent.getActivity(this, 0, new Intent(this, BlinkActivity.class), PendingIntent.FLAG_UPDATE_CURRENT),
-                new IntentFilter[]{new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED)},
-                null);
+        NfcAdapter defaultAdapter = NfcAdapter.getDefaultAdapter(this);
+        if (defaultAdapter != null) {
+            defaultAdapter.enableForegroundDispatch(
+                    this,
+                    PendingIntent.getActivity(this, 0, new Intent(this, BlinkActivity.class), PendingIntent.FLAG_UPDATE_CURRENT),
+                    new IntentFilter[]{new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED)},
+                    null);
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        NfcAdapter.getDefaultAdapter(this).disableForegroundDispatch(this);
+        NfcAdapter defaultAdapter = NfcAdapter.getDefaultAdapter(this);
+        if (defaultAdapter != null) {
+            defaultAdapter.disableForegroundDispatch(this);
+        }
     }
 
     @Override
@@ -129,6 +139,8 @@ public class BlinkActivity extends ActionBarActivity {
                     return "Groups";
                 case 2:
                     return "Scenes";
+                case 3:
+                    return "Timers";
             }
             return super.getPageTitle(position);
         }
@@ -151,6 +163,10 @@ public class BlinkActivity extends ActionBarActivity {
                     break;
 
                 case 2:
+                    className = SceneListFragment.class.getName();
+                    break;
+
+                case 3:
                     className = SceneListFragment.class.getName();
                     break;
             }

@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.Loader;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -76,6 +77,10 @@ public class EditListFragment extends BlinkListFragment implements LoaderManager
         int index = 0;
         for (Long id : mChecked) {
             deviceIds[index++] = id;
+        }
+
+        if (TextUtils.isEmpty(mNameView.getText())) {
+            updateName();
         }
 
         if (mId != -1) {
@@ -219,7 +224,6 @@ public class EditListFragment extends BlinkListFragment implements LoaderManager
                     mSelectedDevices.remove(device.getId());
                     mChecked.remove(device.getId());
                 }
-                updateName();
             }
         }
     }

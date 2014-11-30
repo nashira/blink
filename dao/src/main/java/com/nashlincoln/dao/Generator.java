@@ -71,10 +71,21 @@ public class Generator {
         Property sceneDeviceDeviceId = sceneDevice.addLongProperty("deviceId").getProperty();
         Property sceneDeviceAttributableType = sceneDevice.addStringProperty("attributableType").getProperty();
 
+        Entity timer = schema.addEntity("Timer");
+        timer.setHasKeepSections(true);
+        timer.addStringProperty("name");
+        timer.addStringProperty("time");
+        timer.addBooleanProperty("repeat");
+        timer.addIntProperty("repeatFlags");
+        Property timerId = timer.addIdProperty().autoincrement().getProperty();
+        Property timerAttributableId = timer.addLongProperty("attributableId").getProperty();
+        Property timerAttributableType = timer.addStringProperty("attributableType").getProperty();
 
         Index index = new Index();
         index.addProperty(attributableId);
         index.addProperty(attributableType);
+        index.addProperty(attributeTypeId);
+        index.makeUnique();
         attr.addIndex(index);
 
         attr.addToOne(attrType, attributeTypeId);
