@@ -5,9 +5,10 @@
 
     <ListView
         android:id="@+id/list"
-        android:footerDividersEnabled="false"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:animateLayoutChanges="true"
+        android:layout_height="match_parent"
+        android:footerDividersEnabled="true" />
 
     <include layout="@layout/fab" />
 </FrameLayout>

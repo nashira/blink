@@ -35,6 +35,7 @@ public class Scene {
 
     // KEEP FIELDS - put your custom fields here
     public static final String KEY = "Scene";
+    private boolean mIsExpanded;
     // KEEP FIELDS END
 
     public Scene() {
@@ -214,6 +215,14 @@ public class Scene {
         for (Long deviceId : deviceSet) {
             addDevice(deviceId);
         }
+    }
+
+    public boolean isExpanded() {
+        return mIsExpanded;
+    }
+
+    public void setExpanded(boolean isExpanded) {
+        mIsExpanded = isExpanded;
     }
     // KEEP METHODS END
 

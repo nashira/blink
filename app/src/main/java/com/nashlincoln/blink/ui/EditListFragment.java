@@ -15,6 +15,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -35,7 +36,7 @@ import java.util.Set;
 /**
 * Created by nash on 11/10/14.
 */
-public class EditListFragment extends BlinkListFragment implements LoaderManager.LoaderCallbacks<List<Device>> {
+public class EditListFragment extends BlinkListFragment implements LoaderManager.LoaderCallbacks<List<Device>>, AdapterView.OnItemClickListener {
 
     private DeviceAdapter mAdapter;
     private EditText mNameView;
@@ -134,6 +135,7 @@ public class EditListFragment extends BlinkListFragment implements LoaderManager
         super.onActivityCreated(savedInstanceState);
         mAdapter = new DeviceAdapter(getActivity());
         mListView.setAdapter(mAdapter);
+        mListView.setOnItemClickListener(this);
         getLoaderManager().initLoader(0, null, this);
     }
 
@@ -172,6 +174,22 @@ public class EditListFragment extends BlinkListFragment implements LoaderManager
         mNameView.setText(sb.toString());
     }
 
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        DeviceAdapter.Holder holder = (DeviceAdapter.Holder) view.getTag();
+
+        holder.checkBox.toggle();
+
+        Device device = mAdapter.getItem(holder.position);
+        if (holder.checkBox.isChecked()) {
+            mSelectedDevices.put(device.getId(), device);
+            mChecked.add(device.getId());
+        } else {
+            mSelectedDevices.remove(device.getId());
+            mChecked.remove(device.getId());
+        }
+    }
+
     class DeviceAdapter extends ArrayAdapter<Device> {
 
         public DeviceAdapter(Context context) {
@@ -200,7 +218,7 @@ public class EditListFragment extends BlinkListFragment implements LoaderManager
             holder.textView.setText(device.getName());
         }
 
-        class Holder implements View.OnClickListener {
+        class Holder {
             int position;
             CheckBox checkBox;
             TextView textView;
@@ -209,21 +227,6 @@ public class EditListFragment extends BlinkListFragment implements LoaderManager
                 view.setTag(this);
                 checkBox = (CheckBox) view.findViewById(R.id.checkbox);
                 textView = (TextView) view.findViewById(R.id.text);
-                view.setOnClickListener(this);
-            }
-
-            @Override
-            public void onClick(View v) {
-                checkBox.toggle();
-
-                Device device = getItem(position);
-                if (checkBox.isChecked()) {
-                    mSelectedDevices.put(device.getId(), device);
-                    mChecked.add(device.getId());
-                } else {
-                    mSelectedDevices.remove(device.getId());
-                    mChecked.remove(device.getId());
-                }
             }
         }
     }

@@ -169,9 +169,12 @@ public class SceneDeviceDao extends AbstractDao<SceneDevice, Long> {
             StringBuilder builder = new StringBuilder("SELECT ");
             SqlUtils.appendColumns(builder, "T", getAllColumns());
             builder.append(',');
-            SqlUtils.appendColumns(builder, "T0", daoSession.getDeviceDao().getAllColumns());
+            SqlUtils.appendColumns(builder, "T0", daoSession.getSceneDao().getAllColumns());
+            builder.append(',');
+            SqlUtils.appendColumns(builder, "T1", daoSession.getDeviceDao().getAllColumns());
             builder.append(" FROM SCENE_DEVICE T");
-            builder.append(" LEFT JOIN DEVICE T0 ON T.'DEVICE_ID'=T0.'_id'");
+            builder.append(" LEFT JOIN SCENE T0 ON T.'SCENE_ID'=T0.'_id'");
+            builder.append(" LEFT JOIN DEVICE T1 ON T.'DEVICE_ID'=T1.'_id'");
             builder.append(' ');
             selectDeep = builder.toString();
         }
@@ -181,6 +184,10 @@ public class SceneDeviceDao extends AbstractDao<SceneDevice, Long> {
     protected SceneDevice loadCurrentDeep(Cursor cursor, boolean lock) {
         SceneDevice entity = loadCurrent(cursor, 0, lock);
         int offset = getAllColumns().length;
+
+        Scene scene = loadCurrentOther(daoSession.getSceneDao(), cursor, offset);
+        entity.setScene(scene);
+        offset += daoSession.getSceneDao().getAllColumns().length;
 
         Device device = loadCurrentOther(daoSession.getDeviceDao(), cursor, offset);
         entity.setDevice(device);

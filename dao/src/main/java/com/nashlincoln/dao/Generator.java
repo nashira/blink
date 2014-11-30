@@ -109,6 +109,7 @@ public class Generator {
         sceneDevice.addIndex(index);
 
         scene.addToMany(sceneDevice, sceneDeviceSceneId);
+        sceneDevice.addToOne(scene, sceneDeviceSceneId);
         sceneDevice.addToOne(device, sceneDeviceDeviceId);
         sceneDevice.addToMany(new Property[]{sceneDeviceId, sceneDeviceAttributableType},
                 attr, new Property[]{attributableId, attributableType}).setName("attributes");

@@ -4,6 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:clipToPadding="false"
+    android:descendantFocusability="blocksDescendants"
+    android:background="@drawable/line_bottom"
     android:padding="@dimen/padding_normal">
 
     <ImageButton

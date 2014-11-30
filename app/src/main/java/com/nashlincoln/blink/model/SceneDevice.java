@@ -25,6 +25,9 @@ public class SceneDevice {
     /** Used for active entity operations. */
     private transient SceneDeviceDao myDao;
 
+    private Scene scene;
+    private Long scene__resolvedKey;
+
     private Device device;
     private Long device__resolvedKey;
 
@@ -84,6 +87,31 @@ public class SceneDevice {
 
     public void setAttributableType(String attributableType) {
         this.attributableType = attributableType;
+    }
+
+    /** To-one relationship, resolved on first access. */
+    public Scene getScene() {
+        Long __key = this.sceneId;
+        if (scene__resolvedKey == null || !scene__resolvedKey.equals(__key)) {
+            if (daoSession == null) {
+                throw new DaoException("Entity is detached from DAO context");
+            }
+            SceneDao targetDao = daoSession.getSceneDao();
+            Scene sceneNew = targetDao.load(__key);
+            synchronized (this) {
+                scene = sceneNew;
+            	scene__resolvedKey = __key;
+            }
+        }
+        return scene;
+    }
+
+    public void setScene(Scene scene) {
+        synchronized (this) {
+            this.scene = scene;
+            sceneId = scene == null ? null : scene.getId();
+            scene__resolvedKey = sceneId;
+        }
     }
 
     /** To-one relationship, resolved on first access. */

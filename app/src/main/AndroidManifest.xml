@@ -34,12 +34,22 @@
         <activity
             android:name=".ui.SettingsActivity"
             android:label="@string/title_settings"
-            android:parentActivityName=".ui.BlinkActivity"/>
+            android:parentActivityName=".ui.BlinkActivity">
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.BlinkActivity" />
+        </activity>
 
         <activity
             android:name=".ui.EditListActivity"
             android:label="@string/title_edit"
-            android:parentActivityName=".ui.BlinkActivity"/>
+            android:parentActivityName=".ui.BlinkActivity">
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.BlinkActivity" />
+        </activity>
 
         <receiver android:name=".app.NetworkReceiver">
 
