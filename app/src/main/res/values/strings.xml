@@ -4,7 +4,7 @@
     <string name="app_name">Blink</string>
     <string name="title_preference_host">Hub host</string>
     <string name="summary_preference_host">The IP or host name of the HA hub</string>
-    <string name="default_host">http://10.0.0.149</string>
+    <string name="default_host">http://10.0.0.144</string>
     <string name="preference_key_host">pref_host</string>
     <string name="title_settings">Settings</string>
     <string name="action_settings">Settings</string>
@@ -21,7 +21,7 @@
     <string name="preference_key_ssid">pref_ssid</string>
     <string name="title_preference_ssid">SSID</string>
     <string name="summary_preference_ssid">The network ssid that the hub is on</string>
-    <string name="default_ssid">bokonon</string>
+    <string name="default_ssid"></string>
     <string name="action_write_nfc">Write to NFC</string>
     <string name="action_edit">Edit</string>
     <string name="edit_name">Name</string>

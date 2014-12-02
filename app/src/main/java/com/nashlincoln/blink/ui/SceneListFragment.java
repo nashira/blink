@@ -1,8 +1,6 @@
 package com.nashlincoln.blink.ui;
 
 import android.app.Activity;
-import android.app.DialogFragment;
-import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.Intent;
 import android.content.Loader;
@@ -26,12 +24,10 @@ import com.nashlincoln.blink.content.SceneLoader;
 import com.nashlincoln.blink.content.Syncro;
 import com.nashlincoln.blink.event.Event;
 import com.nashlincoln.blink.model.DaoSession;
-import com.nashlincoln.blink.model.Device;
-import com.nashlincoln.blink.model.DeviceDao;
 import com.nashlincoln.blink.model.Scene;
 import com.nashlincoln.blink.model.SceneDevice;
-import com.nashlincoln.blink.model.SceneDeviceDao;
 import com.nashlincoln.blink.nfc.NfcUtils;
+import com.nashlincoln.blink.widget.DeviceSummary;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -209,10 +205,21 @@ public class SceneListFragment extends BlinkListFragment {
             Scene scene = (Scene) getItem(position);
             holder.position = position;
             holder.nameView.setText(scene.getName());
-            if (scene.isExpanded() || getCount() == position + 1) {
+            if (scene.isExpanded()) {
                 holder.view.setBackgroundResource(0);
+                holder.summaryLayout.setVisibility(View.GONE);
             } else {
-                holder.view.setBackgroundResource(R.drawable.line_bottom);
+                holder.view.setBackgroundResource(getCount() == position + 1 ? 0 : R.drawable.line_bottom);
+                holder.summaryLayout.setVisibility(View.VISIBLE);
+
+                holder.summaryLayout.removeAllViews();
+                for (SceneDevice sceneDevice : scene.getSceneDeviceList()) {
+                    View.inflate(getActivity(), R.layout.device_summary, holder.summaryLayout);
+                    DeviceSummary textView = (DeviceSummary) holder.summaryLayout.getChildAt(holder.summaryLayout.getChildCount()-1);
+                    textView.setText(sceneDevice.getDevice().getName().substring(0, 1));
+                    textView.setOn(sceneDevice.isOn());
+                    textView.setLevel(sceneDevice.getLevel() / 255f);
+                }
             }
         }
 
@@ -266,6 +273,7 @@ public class SceneListFragment extends BlinkListFragment {
             TextView nameView;
             ImageButton applyButton;
             ImageButton settingsButton;
+            ViewGroup summaryLayout;
 
             SceneHolder(View view) {
                 view.setTag(this);
@@ -273,6 +281,7 @@ public class SceneListFragment extends BlinkListFragment {
                 nameView = (TextView) view.findViewById(R.id.text);
                 settingsButton = (ImageButton) view.findViewById(R.id.button_settings);
                 applyButton = (ImageButton) view.findViewById(R.id.button_apply);
+                summaryLayout = (ViewGroup) view.findViewById(R.id.summary_layout);
                 settingsButton.setOnClickListener(this);
                 applyButton.setOnClickListener(this);
             }
@@ -340,7 +349,6 @@ public class SceneListFragment extends BlinkListFragment {
                 seekBar = (SeekBar) view.findViewById(R.id.seek_bar);
                 settingsButton = (ImageButton) view.findViewById(R.id.button_settings);
                 settingsButton.setVisibility(View.GONE);
-//                settingsButton.setOnClickListener(this);
                 toggle.setOnCheckedChangeListener(this);
                 seekBar.setOnSeekBarChangeListener(this);
                 seekBar.setMax(255);

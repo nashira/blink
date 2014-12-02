@@ -3,6 +3,8 @@
     <color name="primary">#03a9f4</color>
     <color name="primary_dark">#0288d1</color>
     <color name="accent">#ffab40</color>
+    <color name="gray_400">#bdbdbd</color>
+    <color name="white">#fff</color>
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!--   your app branding color for the app bar -->

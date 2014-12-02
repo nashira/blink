@@ -3,18 +3,18 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/line_bottom"
     android:clipToPadding="false"
     android:descendantFocusability="blocksDescendants"
-    android:background="@drawable/line_bottom"
     android:padding="@dimen/padding_normal">
 
     <ImageButton
         android:id="@+id/button_settings"
         android:layout_width="40dp"
         android:layout_height="40dp"
+        android:layout_alignParentRight="true"
         android:layout_marginRight="-13dp"
         android:layout_marginTop="-16dp"
-        android:layout_alignParentRight="true"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:src="@drawable/ic_item_overflow" />
 
@@ -26,13 +26,25 @@
         android:id="@+id/text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
         android:layout_marginLeft="@dimen/padding_normal"
         android:layout_marginRight="@dimen/padding_small"
         android:layout_toLeftOf="@id/button_settings"
         android:layout_toRightOf="@id/button_apply"
         android:ellipsize="end"
+        android:gravity="start|center_vertical"
         android:maxLines="2"
+        android:lines="2"
         android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <LinearLayout
+        android:id="@+id/summary_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/button_apply"
+        android:layout_below="@id/button_apply"
+        android:layout_marginTop="@dimen/padding_normal"
+        android:layout_marginLeft="@dimen/padding_normal"
+        android:visibility="gone"
+        android:orientation="horizontal"/>
 
 </RelativeLayout>
