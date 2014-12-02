@@ -5,6 +5,7 @@
     <color name="accent">#ffab40</color>
     <color name="gray_400">#bdbdbd</color>
     <color name="white">#fff</color>
+    <color name="accent_light">#ffd180</color>
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!--   your app branding color for the app bar -->

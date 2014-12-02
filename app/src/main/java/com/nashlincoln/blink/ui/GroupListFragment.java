@@ -32,6 +32,7 @@ import com.nashlincoln.blink.model.GroupDevice;
 import com.nashlincoln.blink.model.Scene;
 import com.nashlincoln.blink.model.SceneDevice;
 import com.nashlincoln.blink.nfc.NfcUtils;
+import com.nashlincoln.blink.widget.DeviceSummary;
 
 import java.util.List;
 
@@ -162,7 +163,7 @@ public class GroupListFragment extends BlinkListFragment {
         public View getView(int position, View convertView, ViewGroup parent) {
             Holder holder;
             if (convertView == null) {
-                convertView = View.inflate(getContext(), R.layout.device_item, null);
+                convertView = View.inflate(getContext(), R.layout.group_item, null);
                 holder = new Holder(convertView);
             } else {
                 holder = (Holder) convertView.getTag();
@@ -181,6 +182,16 @@ public class GroupListFragment extends BlinkListFragment {
             holder.toggle.setChecked(group.isOn());
             holder.seekBar.setProgress(group.getLevel());
             holder.selfChange = false;
+
+            holder.summaryLayout.setVisibility(View.VISIBLE);
+
+            holder.summaryLayout.removeAllViews();
+            for (GroupDevice groupDevice : group.getGroupDeviceList()) {
+                View.inflate(getActivity(), R.layout.device_summary, holder.summaryLayout);
+                DeviceSummary textView = (DeviceSummary) holder.summaryLayout.getChildAt(holder.summaryLayout.getChildCount()-1);
+                textView.setText(groupDevice.getDevice().getName().substring(0, 1));
+                textView.setOn(false);
+            }
         }
 
         class Holder implements CompoundButton.OnCheckedChangeListener, SeekBar.OnSeekBarChangeListener, View.OnClickListener, PopupMenu.OnMenuItemClickListener {
@@ -190,6 +201,7 @@ public class GroupListFragment extends BlinkListFragment {
             SwitchCompat toggle;
             SeekBar seekBar;
             ImageButton settingsButton;
+            ViewGroup summaryLayout;
 
             Holder(View view) {
                 view.setTag(this);
@@ -197,6 +209,7 @@ public class GroupListFragment extends BlinkListFragment {
                 toggle = (SwitchCompat) view.findViewById(R.id.toggle);
                 seekBar = (SeekBar) view.findViewById(R.id.seek_bar);
                 settingsButton = (ImageButton) view.findViewById(R.id.button_settings);
+                summaryLayout = (ViewGroup) view.findViewById(R.id.summary_layout);
                 settingsButton.setOnClickListener(this);
                 toggle.setOnCheckedChangeListener(this);
                 seekBar.setOnSeekBarChangeListener(this);

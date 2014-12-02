@@ -14,6 +14,17 @@ public class AttributeType {
     private String dataType;
 
     // KEEP FIELDS - put your custom fields here
+    public static final long ATTRIBUTE_On_Off = 1;
+    public static final long ATTRIBUTE_Level = 2;
+    public static final long ATTRIBUTE_LockState = 5;
+    public static final long ATTRIBUTE_LockType = 6;
+    public static final long ATTRIBUTE_ActuatorEnabled = 7;
+    public static final long ATTRIBUTE_DoorState = 8;
+    public static final long ATTRIBUTE_DoorOpenEvents = 9;
+    public static final long ATTRIBUTE_DoorClosedEvents = 10;
+    public static final long ATTRIBUTE_OpenPeriod = 11;
+    public static final long ATTRIBUTE_LockDoor = 12;
+    public static final long ATTRIBUTE_UnlockDoor = 13;
     // KEEP FIELDS END
 
     public AttributeType() {

@@ -1,6 +1,7 @@
 package com.nashlincoln.blink.content;
 
 import com.nashlincoln.blink.model.Attribute;
+import com.nashlincoln.blink.model.AttributeType;
 import com.nashlincoln.blink.model.Device;
 
 import java.util.ArrayList;
@@ -44,7 +45,8 @@ public class Command {
         command.id = device.getId();
         command.updates = new ArrayList<>();
         for (Attribute attribute : device.getAttributes()) {
-            if (attribute.isChanged()) {
+            if (attribute.isChanged()
+                    && (attribute.getAttributeTypeId() == AttributeType.ATTRIBUTE_On_Off || device.isOn())) {
                 command.updates.add(new Update(attribute));
             }
         }

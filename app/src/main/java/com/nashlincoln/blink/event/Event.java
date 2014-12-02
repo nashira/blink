@@ -31,14 +31,14 @@ public class Event {
     }
 
     public static void broadcast(String key) {
-        Log.d(TAG, "broadcast");
+        Log.d(TAG, "broadcast: " + key);
         if (sObservables.containsKey(key)) {
             sObservables.get(key).notifyObservers();
         }
     }
 
     public static void broadcast(String key, Object data) {
-        Log.d(TAG, "broadcast");
+        Log.d(TAG, "broadcast: " + key);
         if (sObservables.containsKey(key)) {
             sObservables.get(key).notifyObservers(data);
         }

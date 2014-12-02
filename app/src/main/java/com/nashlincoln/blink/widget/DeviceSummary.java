@@ -47,7 +47,7 @@ public class DeviceSummary extends TextView {
 
     private void init() {
         int textColor = getResources().getColor(R.color.white);
-        int levelColor = getResources().getColor(R.color.accent);
+        int levelColor = getResources().getColor(R.color.accent_light);
         float strokeWidth = getResources().getDimension(R.dimen.device_summary_stroke);
 
         mOnColor = getResources().getColor(R.color.primary);
@@ -59,8 +59,8 @@ public class DeviceSummary extends TextView {
         mLevelPaint = new Paint();
         mLevelPaint.setAntiAlias(true);
         mLevelPaint.setColor(levelColor);
-        mLevelPaint.setStrokeWidth(strokeWidth);
-        mLevelPaint.setStyle(Paint.Style.STROKE);
+//        mLevelPaint.setStrokeWidth(strokeWidth);
+        mLevelPaint.setStyle(Paint.Style.FILL);
         setTextColor(textColor);
     }
 
@@ -76,9 +76,12 @@ public class DeviceSummary extends TextView {
 
     @Override
     protected void onDraw(@NonNull Canvas canvas) {
-        mBackgroundPaint.setColor(isOn ? mOnColor : mOffColor);
+//        mBackgroundPaint.setColor(isOn ? mOnColor : mOffColor);
+        mBackgroundPaint.setColor(mOffColor);
         canvas.drawOval(mArcRect, mBackgroundPaint);
-        canvas.drawArc(mArcRect, 270, -360 * level, false, mLevelPaint);
+        if (isOn) {
+            canvas.drawArc(mArcRect, 270, -360 * level, true, mLevelPaint);
+        }
         super.onDraw(canvas);
     }
 
