@@ -8,6 +8,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.nashlincoln.blink.R;
+import com.nashlincoln.blink.app.BlinkApp;
 
 /**
  * Created by nash on 11/10/14.
@@ -24,7 +25,19 @@ public class EditListActivity extends ActionBarActivity {
         setSupportActionBar(toolbar);
 
         if (savedInstanceState == null) {
-            Fragment fragment = Fragment.instantiate(this, EditListFragment.class.getName(), getIntent().getExtras());
+            int type = getIntent().getIntExtra(BlinkApp.EXTRA_TYPE, BlinkApp.TYPE_DEVICE);
+            Fragment fragment = null;
+
+            switch (type) {
+                case BlinkApp.TYPE_DEVICE:
+                    fragment = Fragment.instantiate(this, EditListFragment.class.getName(), getIntent().getExtras());
+                    break;
+
+                case BlinkApp.TYPE_DEVICE_TYPE:
+                    fragment = Fragment.instantiate(this, AddDeviceFragment.class.getName(), getIntent().getExtras());
+                    break;
+            }
+
             getFragmentManager().beginTransaction()
                     .replace(R.id.content_frame, fragment)
                     .commit();

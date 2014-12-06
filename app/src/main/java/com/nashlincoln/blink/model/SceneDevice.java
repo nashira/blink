@@ -231,6 +231,13 @@ public class SceneDevice {
         sceneDevice.setAttributableType(ATTRIBUTABLE_TYPE);
         return sceneDevice;
     }
+
+    public void deleteWithReferences() {
+        for (Attribute attribute : getAttributes()) {
+            attribute.delete();
+        }
+        delete();
+    }
     // KEEP METHODS END
 
 }

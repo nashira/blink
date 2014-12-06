@@ -17,12 +17,12 @@
   foreach ($commands as $command) {
     switch ($command->action) {
       case 'add':
-        exec('aprontest -a -r ' . escapeshellarg($command->type) . ' &> /dev/null &');
+        exec('aprontest -a -r ' . escapeshellarg($command->type));
         $responses[] = ['status' => 'ok'];
       break;
 
       case 'remove':
-        exec('aprontest -d -m ' . escapeshellarg($command->id) . ' &> /dev/null &');
+        exec('aprontest -d -m ' . escapeshellarg($command->id));
         $responses[] = ['status' => 'ok'];
       break;
 

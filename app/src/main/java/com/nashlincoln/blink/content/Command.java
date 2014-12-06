@@ -11,10 +11,10 @@ import java.util.List;
  * Created by nash on 10/18/14.
  */
 public class Command {
-    private static final String ADD = "add";
-    private static final String REMOVE = "remove";
-    private static final String UPDATE = "update";
-    private static final String SET_NAME = "set-name";
+    public static final String ADD = "add";
+    public static final String REMOVE = "remove";
+    public static final String UPDATE = "update";
+    public static final String SET_NAME = "set-name";
     public long id;
     public String action;
     public String name;

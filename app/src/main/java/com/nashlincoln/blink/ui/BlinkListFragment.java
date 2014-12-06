@@ -15,13 +15,13 @@ import com.nashlincoln.blink.R;
  */
 public class BlinkListFragment extends Fragment implements View.OnClickListener {
     protected ListView mListView;
-    protected ImageButton mAddButton;
+    protected ImageButton mFabButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_list, null);
         mListView = (ListView) view.findViewById(R.id.list);
-        mAddButton = (ImageButton) view.findViewById(R.id.fab);
+        mFabButton = (ImageButton) view.findViewById(R.id.fab);
 
         View footer = inflater.inflate(R.layout.list_footer, null);
         mListView.addFooterView(footer, null, false);
@@ -32,7 +32,7 @@ public class BlinkListFragment extends Fragment implements View.OnClickListener 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mAddButton.setOnClickListener(this);
+        mFabButton.setOnClickListener(this);
     }
 
     protected void onFabClick(View view) {

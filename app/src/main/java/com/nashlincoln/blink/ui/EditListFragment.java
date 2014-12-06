@@ -1,7 +1,6 @@
 package com.nashlincoln.blink.ui;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.Context;
 import android.content.Intent;
@@ -19,7 +18,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.nashlincoln.blink.R;
@@ -118,7 +116,7 @@ public class EditListFragment extends BlinkListFragment implements LoaderManager
         View header = inflater.inflate(R.layout.edit_text_dialog, null);
         mNameView = (EditText) header.findViewById(R.id.edit_text);
         mListView.addHeaderView(header, null, false);
-        mAddButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_done_white_24dp));
+        mFabButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_done_white_24dp));
         return view;
     }
 

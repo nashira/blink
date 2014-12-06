@@ -274,14 +274,6 @@ public class Group {
         return BlinkApi.getGson().toJson(commands);
     }
 
-    public void removeDevice(final long deviceId) {
-        for (GroupDevice groupDevice : getGroupDeviceList()) {
-            if (groupDevice.getDeviceId() == deviceId) {
-                groupDevice.delete();
-            }
-        }
-    }
-
     public void addDevice(long deviceId) {
         DeviceDao deviceDao = daoSession.getDeviceDao();
         Device device = deviceDao.load(deviceId);

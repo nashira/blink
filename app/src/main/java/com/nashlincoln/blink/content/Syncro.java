@@ -16,9 +16,11 @@ import com.nashlincoln.blink.network.BlinkApi;
 import com.nashlincoln.blink.nfc.NfcCommand;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Set;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -85,15 +87,22 @@ public class Syncro {
             BlinkApi.getClient().sendCommands(commands, new Callback<Response>() {
                 @Override
                 public void success(Response response, Response response2) {
+                    final boolean[] needsRefresh = {false};
                     BlinkApp.getDaoSession().runInTx(new Runnable() {
                         @Override
                         public void run() {
                             for (Command command : commands) {
+                                needsRefresh[0] |= command.action.equals(Command.ADD);
                                 command.device.setNominal();
                             }
                         }
                     });
+
                     Event.broadcast(Device.KEY);
+
+                    if (needsRefresh[0]) {
+                        fetchDevices();
+                    }
                 }
 
                 @Override
@@ -152,51 +161,24 @@ public class Syncro {
                 mDaoSession.runInTx(new Runnable() {
                     @Override
                     public void run() {
+                        List<Device> currentDevices = deviceDao.loadAll();
+                        Set<Long> newIds = new HashSet<>();
                         for (Device device : devices) {
+                            newIds.add(device.getId());
                             device.setAttributableType(Device.ATTRIBUTABLE_TYPE);
                             device.flushAttributes();
                             device.resetAttributes();
                             deviceDao.insertOrReplace(device);
                         }
-                    }
-                });
-                mDaoSession.clear();
-                Event.broadcast(Device.KEY);
-            }
 
-            @Override
-            public void failure(RetrofitError error) {
-
-            }
-        });
-    }
-
-    public void refreshDevices() {
-        if (!mIsConnected) {
-            return;
-        }
-        BlinkApi.getClient().getDevices(new Callback<List<Device>>() {
-            @Override
-            public void success(final List<Device> devices, Response response) {
-                final DeviceDao deviceDao = mDaoSession.getDeviceDao();
-
-                mDaoSession.runInTx(new Runnable() {
-                    @Override
-                    public void run() {
-                        for (Device device : devices) {
-                            Device current = deviceDao.load(device.getId());
-                            if (current == null) {
-                                device.setAttributableType(Device.ATTRIBUTABLE_TYPE);
-                                device.flushAttributes();
-                                device.resetAttributes();
-                                deviceDao.insertOrReplace(device);
-                            } else {
-                                current.updateFrom(device);
+                        for (Device device : currentDevices) {
+                            if (!newIds.contains(device.getId())) {
+                                device.deleteWithReferences();
                             }
                         }
+
                     }
                 });
-
                 mDaoSession.clear();
                 Event.broadcast(Device.KEY);
             }
@@ -207,6 +189,43 @@ public class Syncro {
             }
         });
     }
+
+//    public void refreshDevices() {
+//        if (!mIsConnected) {
+//            return;
+//        }
+//        BlinkApi.getClient().getDevices(new Callback<List<Device>>() {
+//            @Override
+//            public void success(final List<Device> devices, Response response) {
+//                final DeviceDao deviceDao = mDaoSession.getDeviceDao();
+//
+//                mDaoSession.runInTx(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        for (Device device : devices) {
+//                            Device current = deviceDao.load(device.getId());
+//                            if (current == null) {
+//                                device.setAttributableType(Device.ATTRIBUTABLE_TYPE);
+//                                device.flushAttributes();
+//                                device.resetAttributes();
+//                                deviceDao.insertOrReplace(device);
+//                            } else {
+//                                current.updateFrom(device);
+//                            }
+//                        }
+//                    }
+//                });
+//
+//                mDaoSession.clear();
+//                Event.broadcast(Device.KEY);
+//            }
+//
+//            @Override
+//            public void failure(RetrofitError error) {
+//
+//            }
+//        });
+//    }
 
     public synchronized void onConnected(boolean isConnected) {
         Log.d(TAG, "onConnected: " + isConnected);
@@ -221,7 +240,7 @@ public class Syncro {
                     syncDevices();
                 }
             });
-            refreshDevices();
+            fetchDevices();
         }
 
         Event.broadcast(CONNECTION, mIsConnected);

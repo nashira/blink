@@ -7,6 +7,10 @@
         android:title="@string/action_edit" />
 
     <item
+        android:id="@+id/action_remove"
+        android:title="@string/action_remove" />
+
+    <item
         android:id="@+id/action_write_nfc"
         android:title="@string/action_write_nfc" />
 

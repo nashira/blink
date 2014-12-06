@@ -173,21 +173,6 @@ public class Scene {
         return BlinkApi.getGson().toJson(commands);
     }
 
-    public void removeDevice(final long deviceId) {
-        for (SceneDevice sceneDevice : getSceneDeviceList()) {
-            if (sceneDevice.getDeviceId() == deviceId) {
-                deleteSceneDevice(sceneDevice);
-            }
-        }
-    }
-
-    public void deleteSceneDevice(SceneDevice sceneDevice) {
-        for (Attribute attribute : sceneDevice.getAttributes()) {
-            attribute.delete();
-        }
-        sceneDevice.delete();
-    }
-
     public void addDevice(long deviceId) {
         DeviceDao deviceDao = daoSession.getDeviceDao();
         Device device = deviceDao.load(deviceId);
@@ -208,7 +193,7 @@ public class Scene {
             if (deviceSet.contains(sceneDevice.getDeviceId())) {
                 deviceSet.remove(sceneDevice.getDeviceId());
             } else {
-                deleteSceneDevice(sceneDevice);
+                sceneDevice.deleteWithReferences();
             }
         }
 

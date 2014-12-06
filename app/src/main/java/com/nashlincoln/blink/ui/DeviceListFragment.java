@@ -4,6 +4,7 @@ import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.Loader;
 import android.os.Bundle;
 import android.support.v7.widget.SwitchCompat;
@@ -19,6 +20,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.nashlincoln.blink.R;
+import com.nashlincoln.blink.app.BlinkApp;
 import com.nashlincoln.blink.content.DeviceLoader;
 import com.nashlincoln.blink.content.Syncro;
 import com.nashlincoln.blink.model.Device;
@@ -45,7 +47,9 @@ public class DeviceListFragment extends BlinkListFragment {
 
     @Override
     protected void onFabClick(View view) {
-
+        Intent intent = new Intent(getActivity(), EditListActivity.class);
+        intent.putExtra(BlinkApp.EXTRA_TYPE, BlinkApp.TYPE_DEVICE_TYPE);
+        startActivity(intent);
     }
 
     private LoaderManager.LoaderCallbacks<List<Device>> mLoaderCallbacks = new LoaderManager.LoaderCallbacks<List<Device>>() {
@@ -167,6 +171,12 @@ public class DeviceListFragment extends BlinkListFragment {
                         device = getItem(position);
                         DialogFragment fragment = EditNameDialogFragment.newInstance(device.getId());
                         fragment.show(getFragmentManager(), "edit");
+                        break;
+
+                    case R.id.action_remove:
+                        device = getItem(position);
+                        device.setState(Device.STATE_REMOVED);
+                        Syncro.getInstance().syncDevices();
                         break;
 
                     case R.id.action_write_nfc:

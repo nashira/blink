@@ -117,7 +117,7 @@ public class BlinkActivity extends ActionBarActivity {
                 return true;
 
             case R.id.action_refresh:
-                Syncro.getInstance().refreshDevices();
+                Syncro.getInstance().fetchDevices();
                 return true;
         }
 

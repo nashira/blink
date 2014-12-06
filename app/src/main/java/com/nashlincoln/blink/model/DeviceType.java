@@ -44,6 +44,9 @@ public class DeviceType {
     }
 
     // KEEP METHODS - put your custom methods here
+    public boolean isEnabled() {
+        return 257 == id;
+    }
     // KEEP METHODS END
 
 }

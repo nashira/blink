@@ -19,8 +19,10 @@ public class BlinkApp extends Application {
     public static final String EXTRA_NFC_WRITE = BuildConfig.APPLICATION_ID + ".NFC_WRITE";
     public static final String EXTRA_NAME = BuildConfig.APPLICATION_ID + ".NAME";
     public static final String EXTRA_DEVICE_IDS = BuildConfig.APPLICATION_ID + ".DEVICE_IDS";
-//    public static final String EXTRA_TYPE = BuildConfig.APPLICATION_ID + ".TYPE";
+    public static final String EXTRA_TYPE = BuildConfig.APPLICATION_ID + ".TYPE";
     public static final String EXTRA_ID = BuildConfig.APPLICATION_ID + ".ID";
+    public static final int TYPE_DEVICE = 0;
+    public static final int TYPE_DEVICE_TYPE = 1;
     private static String PREF_API_HOST;
     private static BlinkApp sInstance;
 
