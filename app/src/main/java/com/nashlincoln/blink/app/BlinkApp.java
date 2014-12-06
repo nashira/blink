@@ -24,8 +24,9 @@ public class BlinkApp extends Application {
     public static final int TYPE_DEVICE = 0;
     public static final int TYPE_DEVICE_TYPE = 1;
     private static String PREF_API_HOST;
-    private static BlinkApp sInstance;
+    private static String PREF_SSID;
 
+    private static BlinkApp sInstance;
     private SharedPreferences mPreferences;
     private DaoSession mDaoSession;
 
@@ -40,6 +41,7 @@ public class BlinkApp extends Application {
         mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         PREF_API_HOST = getString(R.string.preference_key_host);
+        PREF_SSID = getString(R.string.preference_key_ssid);
 
         DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "blink-db", null);
         SQLiteDatabase db = helper.getWritableDatabase();
@@ -60,7 +62,11 @@ public class BlinkApp extends Application {
     }
 
     public boolean isConfigured() {
-        return !getHost().equals("");
+        return !getSsid().equals("");
+    }
+
+    private String getSsid() {
+        return mPreferences.getString(PREF_SSID, "");
     }
 
     public void setHost(String host) {
