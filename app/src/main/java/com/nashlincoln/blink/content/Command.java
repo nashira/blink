@@ -45,8 +45,7 @@ public class Command {
         command.id = device.getId();
         command.updates = new ArrayList<>();
         for (Attribute attribute : device.getAttributes()) {
-            if (attribute.isChanged()
-                    && (attribute.getAttributeTypeId() == AttributeType.ATTRIBUTE_On_Off || device.isOn())) {
+            if (attribute.isChanged()) {
                 command.updates.add(new Update(attribute));
             }
         }
