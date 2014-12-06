@@ -19,7 +19,7 @@ Adding devices from the app is not implemented yet.
 * It uses the 'aprontest' executable on the server, seems flakey sometimes
 * If you controll the hub from more than one android device, you must refresh the hub configuration manually (refresh menu item)
 * It only supports Zigbee HA Dimmable type devices so far
-* It doesn't support adding/renaming devices yet (coming soon)
+* After adding a device, sometimes a manual refresh is needed for it to show up
 
 **To use:**
 * copy the server/api directory to /var/www/ on your wink hub.  
