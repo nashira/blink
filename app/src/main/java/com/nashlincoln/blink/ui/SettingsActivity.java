@@ -1,6 +1,7 @@
 package com.nashlincoln.blink.ui;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.Preference;
@@ -11,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 
 import com.nashlincoln.blink.R;
 import com.nashlincoln.blink.app.BlinkApp;
+import com.nashlincoln.blink.app.NetworkReceiver;
 
 /**
  * Created by nash on 10/18/14.
@@ -48,6 +50,10 @@ public class SettingsActivity extends ActionBarActivity {
             if (preference.getKey().equals(getString(R.string.preference_key_host))) {
                 BlinkApp.getApp().setHost(((EditTextPreference)preference).getText());
             }
+
+            Intent intent = new Intent(getActivity(), NetworkReceiver.class);
+            getActivity().sendBroadcast(intent);
+            BlinkApp.getApp().fetchData();
             return super.onPreferenceTreeClick(preferenceScreen, preference);
         }
     }

@@ -53,7 +53,7 @@ public class BlinkApp extends Application {
         return sInstance.mDaoSession;
     }
 
-    private void fetchData() {
+    public void fetchData() {
         if (isConfigured()) {
             Syncro.getInstance().fetchAttributeTypes();
             Syncro.getInstance().fetchDeviceTypes();
@@ -62,16 +62,11 @@ public class BlinkApp extends Application {
     }
 
     public boolean isConfigured() {
-        return !getSsid().equals("");
-    }
-
-    private String getSsid() {
-        return mPreferences.getString(PREF_SSID, "");
+        return Syncro.getInstance().isConnected();
     }
 
     public void setHost(String host) {
         BlinkApi.createService(host);
-        fetchData();
     }
 
     public String getHost() {

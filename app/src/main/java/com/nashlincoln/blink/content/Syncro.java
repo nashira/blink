@@ -267,4 +267,8 @@ public class Syncro {
         });
         syncDevices();
     }
+
+    public boolean isConnected() {
+        return mIsConnected;
+    }
 }

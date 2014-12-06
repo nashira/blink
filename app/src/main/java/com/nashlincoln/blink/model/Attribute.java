@@ -156,15 +156,21 @@ public class Attribute {
     // KEEP METHODS - put your custom methods here
 
     public boolean getBool() {
+        if (value == null) {
+            return false;
+        }
         return value.equals(ON);
     }
 
     public int getInt() {
+        if (value == null) {
+            return 0;
+        }
         return Integer.parseInt(value);
     }
 
     public boolean isChanged() {
-        return !(valueLocal == null || value.equals(valueLocal));
+        return !(valueLocal == null || valueLocal.equals(value));
     }
 
     public void onSync() {
