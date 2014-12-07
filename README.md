@@ -26,6 +26,5 @@ This project is fairly eary stage.  It only supports dimmable lights as of now.
 * After adding a device, sometimes a manual refresh is needed for it to show up
 
 **To use:**
-* copy the server/api directory to /var/www/ on your wink hub.  
+* copy the server/api directory to /var/www/ on your wink hub.
 * open the app and configure the ip/hostname of the wink hub and the ssid of your network
-* you must have added the devices through some other means, I don't have that hooked up yet
