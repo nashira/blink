@@ -3,6 +3,11 @@ blink
 
 Server scripts and Android app to control a Wink hub on a local network
 
+![Devices](/../screenshots/screenshots/devices.png?raw=true "Devices")
+![Devices](/../screenshots/screenshots/groups.png?raw=true "Groups")
+![Devices](/../screenshots/screenshots/scenes_collapsed.png?raw=true "Scenes Collapsed")
+![Devices](/../screenshots/screenshots/scenes_expanded.png?raw=true "Scenes Expanded")
+![Devices](/../screenshots/screenshots/add_edit.png?raw=true "Add/Edit")
 
 This project is fairly eary stage.  It only supports dimmable lights as of now. 
 
