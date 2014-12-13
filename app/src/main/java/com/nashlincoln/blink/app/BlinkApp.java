@@ -62,7 +62,7 @@ public class BlinkApp extends Application {
     }
 
     public boolean isConfigured() {
-        return Syncro.getInstance().isConnected();
+        return !(getHost().equals("") || getSsid().equals(""));
     }
 
     public void setHost(String host) {
@@ -71,6 +71,10 @@ public class BlinkApp extends Application {
 
     public String getHost() {
         return mPreferences.getString(PREF_API_HOST, "");
+    }
+
+    public String getSsid() {
+        return mPreferences.getString(PREF_SSID, "");
     }
 
     public static SharedPreferences getPreferences() {
