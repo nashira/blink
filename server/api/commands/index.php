@@ -1,6 +1,7 @@
 <?php
   // [
   //   {action: update, id: 1, updates: [{id: 1, value: 23}, {id: 2, value: ON},
+  //   {action: update-group, id: 1, updates: [{id: 1, value: 23}, {id: 2, value: ON},
   //   {action: add, type: [lutron, zwave, zigbee, kidde]}
   //   {action: remove, id: 2}
   //   {action: set_name, id: 2, name: "foo"}
@@ -30,6 +31,14 @@
         foreach ($command->updates as $update) {
           $attr = ' -t ' . escapeshellarg($update->id) . ' -v ' . escapeshellarg($update->value);
           exec('aprontest -u -m ' . escapeshellarg($command->id) . $attr . ' &> /dev/null &');
+        }
+        $responses[] = ['status' => 'ok'];
+      break;
+
+      case 'update-group':
+        foreach ($command->updates as $update) {
+          $attr = ' -t ' . escapeshellarg($update->id) . ' -v ' . escapeshellarg($update->value);
+          exec('aprontest -u -x ' . escapeshellarg($command->id) . $attr . ' &> /dev/null &');
         }
         $responses[] = ['status' => 'ok'];
       break;

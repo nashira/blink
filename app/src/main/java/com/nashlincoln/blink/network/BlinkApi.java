@@ -51,7 +51,7 @@ public class BlinkApi {
                 .setEndpoint(BlinkApp.getApp().getHost())
                 .setLogLevel(RestAdapter.LogLevel.BASIC)
 //                    .setLogLevel(RestAdapter.LogLevel.HEADERS)
-//                    .setLogLevel(RestAdapter.LogLevel.FULL)
+                    .setLogLevel(RestAdapter.LogLevel.FULL)
                 .build();
 
         sService = restAdapter.create(BlinkApiInterface.class);

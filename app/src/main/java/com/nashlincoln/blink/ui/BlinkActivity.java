@@ -43,18 +43,11 @@ public class BlinkActivity extends ActionBarActivity {
         mViewPager = (ViewPager) findViewById(R.id.view_pager);
         mViewPager.setAdapter(new FragmentAdapter(getFragmentManager()));
 
-//        mSlidingTabLayout = (SlidingTabLayout) findViewById(R.id.sliding_tabs);
         mSlidingTabLayout = new SlidingTabLayout(this);
-//        mSlidingTabLayout.setBackgroundResource(R.color.primary);
-
         mSlidingTabLayout.setCustomTabView(R.layout.tab_indicator, android.R.id.text1);
 
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//            mSlidingTabLayout.setElevation(getResources().getDimensionPixelSize(R.dimen.toolbar_elevation));
-//        }
-
         Resources res = getResources();
-//        mSlidingTabLayout.setSelectedIndicatorColors(res.getColor(R.color.accent));
+        mSlidingTabLayout.setSelectedIndicatorColors(res.getColor(R.color.accent));
         mSlidingTabLayout.setDistributeEvenly(true);
         mSlidingTabLayout.setViewPager(mViewPager);
 
@@ -117,7 +110,7 @@ public class BlinkActivity extends ActionBarActivity {
                 return true;
 
             case R.id.action_refresh:
-                Syncro.getInstance().fetchDevices();
+                Syncro.getInstance().fetchDevicesAndGroups();
                 return true;
         }
 

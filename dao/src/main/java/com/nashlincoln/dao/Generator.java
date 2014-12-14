@@ -51,6 +51,7 @@ public class Generator {
         group.setTableName("BLINK_GROUP");
         group.setHasKeepSections(true);
         group.addStringProperty("name");
+        group.addIntProperty("state");
         Property groupId = group.addIdProperty().autoincrement().getProperty();
         Property groupAttributableType = group.addStringProperty("attributableType").getProperty();
 

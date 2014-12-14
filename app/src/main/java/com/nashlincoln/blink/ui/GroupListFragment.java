@@ -80,7 +80,7 @@ public class GroupListFragment extends BlinkListFragment {
                 public void run() {
                     Group group = daoSession.getGroupDao().load(id);
                     group.setName(name);
-                    group.setDeviceIds(ids);
+//                    group.setDeviceIds(ids);
                     group.update();
                     group.resetGroupDeviceList();
                     Event.broadcast(Group.KEY);
@@ -104,7 +104,7 @@ public class GroupListFragment extends BlinkListFragment {
                         group.addDevice(id);
                     }
                     Device device = daoSession.getDeviceDao().load(ids[0]);
-                    group.copyAttributes(device.getAttributes());
+//                    group.copyAttributes(device.getAttributes());
                     group.resetGroupDeviceList();
                     Event.broadcast(Group.KEY);
                 }

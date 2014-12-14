@@ -4,6 +4,7 @@ import com.nashlincoln.blink.content.Command;
 import com.nashlincoln.blink.model.AttributeType;
 import com.nashlincoln.blink.model.Device;
 import com.nashlincoln.blink.model.DeviceType;
+import com.nashlincoln.blink.model.Group;
 
 import java.util.List;
 
@@ -19,6 +20,9 @@ import retrofit.http.POST;
 public interface BlinkApiInterface {
     @GET("/api/devices/")
     public void getDevices(Callback<List<Device>> callback);
+
+    @GET("/api/groups/")
+    public void getGroups(Callback<List<Group>> callback);
 
     @GET("/api/device_types/")
     public void getDeviceTypes(Callback<List<DeviceType>> callback);

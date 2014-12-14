@@ -50,6 +50,9 @@ public class SettingsActivity extends ActionBarActivity {
             if (preference.getKey().equals(getString(R.string.preference_key_host))) {
                 BlinkApp.getApp().setHost(((EditTextPreference)preference).getText());
             }
+//            if (preference.getKey().equals(getString(R.string.preference_key_ssid))) {
+//                BlinkApp.getApp().setSsid(((EditTextPreference)preference).getText());
+//            }
 
             Intent intent = new Intent(getActivity(), NetworkReceiver.class);
             getActivity().sendBroadcast(intent);

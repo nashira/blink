@@ -12,6 +12,8 @@ import com.nashlincoln.blink.model.Device;
 import com.nashlincoln.blink.model.DeviceDao;
 import com.nashlincoln.blink.model.DeviceType;
 import com.nashlincoln.blink.model.DeviceTypeDao;
+import com.nashlincoln.blink.model.Group;
+import com.nashlincoln.blink.model.GroupDao;
 import com.nashlincoln.blink.network.BlinkApi;
 import com.nashlincoln.blink.nfc.NfcCommand;
 
@@ -83,6 +85,36 @@ public class Syncro {
             }
         }
 
+        for (Group group : mDaoSession.getGroupDao().loadAll()) {
+            Command command = null;
+            if (group.getState() == null) {
+                group.setState(Device.STATE_NOMINAL);
+            }
+            switch (group.getState()) {
+                case Device.STATE_ADDED:
+//                    command = Command.add(group);
+//                    break;
+//
+//                case Device.STATE_REMOVED:
+//                    command = Command.remove(group);
+//                    break;
+//
+//                case Device.STATE_NAME_SET:
+//                    command = Command.setName(group);
+//                    break;
+
+                case Device.STATE_UPDATED:
+                    command = Command.update(group);
+                    break;
+
+                case Device.STATE_NOMINAL:
+                    break;
+            }
+            if (command != null) {
+                commands.add(command);
+            }
+        }
+
         if (commands.size() > 0) {
             BlinkApi.getClient().sendCommands(commands, new Callback<Response>() {
                 @Override
@@ -93,7 +125,12 @@ public class Syncro {
                         public void run() {
                             for (Command command : commands) {
                                 needsRefresh[0] |= command.action.equals(Command.ADD);
-                                command.device.setNominal();
+                                if (command.device != null) {
+                                    command.device.setNominal();
+                                }
+                                if (command.group != null) {
+                                    command.group.setNominal();
+                                }
                             }
                         }
                     });
@@ -149,6 +186,11 @@ public class Syncro {
         });
     }
 
+    public void fetchDevicesAndGroups() {
+        fetchDevices();
+        fetchGroups();
+    }
+
 
     public void fetchDevices() {
         if (!mIsConnected) {
@@ -190,42 +232,46 @@ public class Syncro {
         });
     }
 
-//    public void refreshDevices() {
-//        if (!mIsConnected) {
-//            return;
-//        }
-//        BlinkApi.getClient().getDevices(new Callback<List<Device>>() {
-//            @Override
-//            public void success(final List<Device> devices, Response response) {
-//                final DeviceDao deviceDao = mDaoSession.getDeviceDao();
-//
-//                mDaoSession.runInTx(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        for (Device device : devices) {
-//                            Device current = deviceDao.load(device.getId());
-//                            if (current == null) {
-//                                device.setAttributableType(Device.ATTRIBUTABLE_TYPE);
-//                                device.flushAttributes();
-//                                device.resetAttributes();
-//                                deviceDao.insertOrReplace(device);
-//                            } else {
-//                                current.updateFrom(device);
-//                            }
-//                        }
-//                    }
-//                });
-//
-//                mDaoSession.clear();
-//                Event.broadcast(Device.KEY);
-//            }
-//
-//            @Override
-//            public void failure(RetrofitError error) {
-//
-//            }
-//        });
-//    }
+    public void fetchGroups() {
+        if (!mIsConnected) {
+            return;
+        }
+        BlinkApi.getClient().getGroups(new Callback<List<Group>>() {
+            @Override
+            public void success(final List<Group> groups, Response response) {
+                final GroupDao groupDao = mDaoSession.getGroupDao();
+                mDaoSession.runInTx(new Runnable() {
+                    @Override
+                    public void run() {
+                        List<Group> currentGroups = groupDao.loadAll();
+                        Set<Long> newIds = new HashSet<>();
+                        for (Group group : groups) {
+                            newIds.add(group.getId());
+                            group.setAttributableType(Group.ATTRIBUTABLE_TYPE);
+                            group.flushAttributes();
+                            group.resetAttributes();
+                            group.flushGroupDevices();
+                            groupDao.insertOrReplace(group);
+                        }
+
+                        for (Group group : currentGroups) {
+                            if (!newIds.contains(group.getId())) {
+                                group.deleteWithReferences();
+                            }
+                        }
+
+                    }
+                });
+                mDaoSession.clear();
+                Event.broadcast(Group.KEY);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+
+            }
+        });
+    }
 
     public synchronized void onConnected(boolean isConnected) {
         Log.d(TAG, "onConnected: " + isConnected);
@@ -240,7 +286,7 @@ public class Syncro {
                     syncDevices();
                 }
             });
-            fetchDevices();
+            fetchDevicesAndGroups();
         }
 
         Event.broadcast(CONNECTION, mIsConnected);

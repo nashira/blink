@@ -24,8 +24,9 @@ public class GroupDao extends AbstractDao<Group, Long> {
     */
     public static class Properties {
         public final static Property Name = new Property(0, String.class, "name", false, "NAME");
-        public final static Property Id = new Property(1, Long.class, "id", true, "_id");
-        public final static Property AttributableType = new Property(2, String.class, "attributableType", false, "ATTRIBUTABLE_TYPE");
+        public final static Property State = new Property(1, Integer.class, "state", false, "STATE");
+        public final static Property Id = new Property(2, Long.class, "id", true, "_id");
+        public final static Property AttributableType = new Property(3, String.class, "attributableType", false, "ATTRIBUTABLE_TYPE");
     };
 
     private DaoSession daoSession;
@@ -45,8 +46,9 @@ public class GroupDao extends AbstractDao<Group, Long> {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "'BLINK_GROUP' (" + //
                 "'NAME' TEXT," + // 0: name
-                "'_id' INTEGER PRIMARY KEY AUTOINCREMENT ," + // 1: id
-                "'ATTRIBUTABLE_TYPE' TEXT);"); // 2: attributableType
+                "'STATE' INTEGER," + // 1: state
+                "'_id' INTEGER PRIMARY KEY AUTOINCREMENT ," + // 2: id
+                "'ATTRIBUTABLE_TYPE' TEXT);"); // 3: attributableType
         // Add Indexes
         db.execSQL("CREATE INDEX " + constraint + "IDX_BLINK_GROUP__id_ATTRIBUTABLE_TYPE ON BLINK_GROUP" +
                 " (_id,ATTRIBUTABLE_TYPE);");
@@ -68,14 +70,19 @@ public class GroupDao extends AbstractDao<Group, Long> {
             stmt.bindString(1, name);
         }
  
+        Integer state = entity.getState();
+        if (state != null) {
+            stmt.bindLong(2, state);
+        }
+ 
         Long id = entity.getId();
         if (id != null) {
-            stmt.bindLong(2, id);
+            stmt.bindLong(3, id);
         }
  
         String attributableType = entity.getAttributableType();
         if (attributableType != null) {
-            stmt.bindString(3, attributableType);
+            stmt.bindString(4, attributableType);
         }
     }
 
@@ -88,7 +95,7 @@ public class GroupDao extends AbstractDao<Group, Long> {
     /** @inheritdoc */
     @Override
     public Long readKey(Cursor cursor, int offset) {
-        return cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1);
+        return cursor.isNull(offset + 2) ? null : cursor.getLong(offset + 2);
     }    
 
     /** @inheritdoc */
@@ -96,8 +103,9 @@ public class GroupDao extends AbstractDao<Group, Long> {
     public Group readEntity(Cursor cursor, int offset) {
         Group entity = new Group( //
             cursor.isNull(offset + 0) ? null : cursor.getString(offset + 0), // name
-            cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1), // id
-            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2) // attributableType
+            cursor.isNull(offset + 1) ? null : cursor.getInt(offset + 1), // state
+            cursor.isNull(offset + 2) ? null : cursor.getLong(offset + 2), // id
+            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3) // attributableType
         );
         return entity;
     }
@@ -106,8 +114,9 @@ public class GroupDao extends AbstractDao<Group, Long> {
     @Override
     public void readEntity(Cursor cursor, Group entity, int offset) {
         entity.setName(cursor.isNull(offset + 0) ? null : cursor.getString(offset + 0));
-        entity.setId(cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1));
-        entity.setAttributableType(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
+        entity.setState(cursor.isNull(offset + 1) ? null : cursor.getInt(offset + 1));
+        entity.setId(cursor.isNull(offset + 2) ? null : cursor.getLong(offset + 2));
+        entity.setAttributableType(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
      }
     
     /** @inheritdoc */

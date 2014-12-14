@@ -57,7 +57,7 @@ public class BlinkApp extends Application {
         if (isConfigured()) {
             Syncro.getInstance().fetchAttributeTypes();
             Syncro.getInstance().fetchDeviceTypes();
-            Syncro.getInstance().fetchDevices();
+            Syncro.getInstance().fetchDevicesAndGroups();
         }
     }
 
@@ -80,4 +80,8 @@ public class BlinkApp extends Application {
     public static SharedPreferences getPreferences() {
         return getApp().mPreferences;
     }
+//
+//    public void setSsid(String ssid) {
+//
+//    }
 }
