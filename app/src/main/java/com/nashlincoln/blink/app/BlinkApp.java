@@ -1,6 +1,7 @@
 package com.nashlincoln.blink.app;
 
 import android.app.Application;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
@@ -52,6 +53,10 @@ public class BlinkApp extends Application {
         SQLiteDatabase db = helper.getWritableDatabase();
         DaoMaster daoMaster = new DaoMaster(db);
         mDaoSession = daoMaster.newSession();
+
+
+        Intent intent = new Intent(this, NetworkReceiver.class);
+        sendBroadcast(intent);
     }
 
     public static DaoSession getDaoSession() {

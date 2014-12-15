@@ -5,7 +5,7 @@ apply plugin: 'com.android.application'
 def versionMajor = 0
 def versionMinor = 1
 def versionPatch = 0
-def versionCodeNum = 2
+def versionCodeNum = 3
 
 def gitSha() {
     return 'git rev-parse --short HEAD'.execute().text.trim()
