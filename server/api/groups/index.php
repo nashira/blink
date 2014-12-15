@@ -1,6 +1,6 @@
 <?php
   include '../db.php';
-	header("Content-Type: application/json");
+  header("Content-Type: application/json");
 
 
   $db = get_db();
@@ -54,5 +54,5 @@ SQL;
                 $data[] = $row;
         }
         echo json_encode($data);
-        $db->close()
+        $db->close();
 ?>

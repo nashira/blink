@@ -7,6 +7,9 @@
   //   {action: set_name, id: 2, name: "foo"}
   // ]
 
+  include '../db.php';
+  header("Content-Type: application/json");
+
   $commands = json_decode(file_get_contents('php://input'));
 
   if (!isset($commands)) {
@@ -35,6 +38,21 @@
         $responses[] = ['status' => 'ok'];
       break;
 
+      case 'set-name':
+        exec('aprontest -m ' . escapeshellarg($command->id) . ' --set-name ' .  escapeshellarg($command->name) . ' &> /dev/null &');
+        $responses[] = ['status' => 'ok'];
+      break;
+
+      case 'add-group':
+        exec('aprontest -s ' . escapeshellarg($command->name));
+        $responses[] = ['status' => 'ok'];
+      break;
+
+      case 'remove-group':
+        exec('aprontest -w ' . escapeshellarg($command->id));
+        $responses[] = ['status' => 'ok'];
+      break;
+
       case 'update-group':
         foreach ($command->updates as $update) {
           $attr = ' -t ' . escapeshellarg($update->id) . ' -v ' . escapeshellarg($update->value);
@@ -43,11 +61,25 @@
         $responses[] = ['status' => 'ok'];
       break;
 
-      case 'set-name':
-        exec('aprontest -m ' . escapeshellarg($command->id) . ' --set-name ' .  escapeshellarg($command->name) . ' &> /dev/null &');
+      case 'set-name-group':
+        $db = get_db();
+        $statement = $db->prepare('update zigbeeGroup set groupName = :name where groupId = :id;');
+        $statement->bindValue(':name', $command->name);
+        $statement->bindValue(':id', $command->id);
+        $result = $statement->execute();
+        $responses[] = ['status' => $result];
+        $db->close();
+      break;
+
+      case 'add-group-device':
+        exec('aprontest -a -x ' . escapeshellarg($command->groupId) . ' -m ' . escapeshellarg($command->id));
         $responses[] = ['status' => 'ok'];
       break;
 
+      case 'remove-group-device':
+        exec('aprontest -d -x ' . escapeshellarg($command->groupId) . ' -m ' . escapeshellarg($command->id));
+        $responses[] = ['status' => 'ok'];
+      break;
     }
   }
 

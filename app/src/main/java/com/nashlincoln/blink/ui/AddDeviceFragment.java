@@ -45,7 +45,7 @@ public class AddDeviceFragment extends BlinkListFragment
             device.setDeviceType(mDeviceType);
             device.setInterconnect("ZIGBEE");
             device.setAttributableType(Device.ATTRIBUTABLE_TYPE);
-            device.setState(Device.STATE_ADDED);
+            device.setState(BlinkApp.STATE_ADDED);
             BlinkApp.getDaoSession().getDeviceDao().insert(device);
             Syncro.getInstance().syncDevices();
             Log.d(TAG, "add: " + mDeviceType.getId());

@@ -71,44 +71,14 @@ public class GroupListFragment extends BlinkListFragment {
             final long[] ids = data.getLongArrayExtra(BlinkApp.EXTRA_DEVICE_IDS);
             final long id = data.getLongExtra(BlinkApp.EXTRA_ID, -1);
 
-            if (ids == null || ids.length < 1) {
-                return;
-            }
+            Group group = daoSession.getGroupDao().load(id);
+            group.onEdit(name, ids);
 
-            daoSession.runInTx(new Runnable() {
-                @Override
-                public void run() {
-                    Group group = daoSession.getGroupDao().load(id);
-                    group.setName(name);
-//                    group.setDeviceIds(ids);
-                    group.update();
-                    group.resetGroupDeviceList();
-                    Event.broadcast(Group.KEY);
-                }
-            });
         } else if (requestCode == REQUEST_ADD && resultCode == Activity.RESULT_OK && data != null) {
             final String name = data.getStringExtra(BlinkApp.EXTRA_NAME);
             final long[] ids = data.getLongArrayExtra(BlinkApp.EXTRA_DEVICE_IDS);
 
-            if (ids == null || ids.length < 1) {
-                return;
-            }
-
-            daoSession.runInTx(new Runnable() {
-                @Override
-                public void run() {
-                    Group group = Group.newInstance();
-                    group.setName(name);
-                    daoSession.getGroupDao().insert(group);
-                    for (long id : ids) {
-                        group.addDevice(id);
-                    }
-                    Device device = daoSession.getDeviceDao().load(ids[0]);
-//                    group.copyAttributes(device.getAttributes());
-                    group.resetGroupDeviceList();
-                    Event.broadcast(Group.KEY);
-                }
-            });
+            Group.addNewGroup(name, ids);
         }
     }
 
@@ -189,7 +159,10 @@ public class GroupListFragment extends BlinkListFragment {
             for (GroupDevice groupDevice : group.getGroupDeviceList()) {
                 View.inflate(getActivity(), R.layout.device_summary, holder.summaryLayout);
                 DeviceSummary textView = (DeviceSummary) holder.summaryLayout.getChildAt(holder.summaryLayout.getChildCount()-1);
-                textView.setText(groupDevice.getDevice().getName().substring(0, 1));
+
+                if (groupDevice.getDevice() != null) {
+                    textView.setText(groupDevice.getDevice().getName().substring(0, 1));
+                }
                 textView.setOn(false);
             }
         }
@@ -258,7 +231,9 @@ public class GroupListFragment extends BlinkListFragment {
                 switch (item.getItemId()) {
                     case R.id.action_remove:
                         Group group = getItem(position);
-                        group.deleteWithReferences();
+                        group.setState(BlinkApp.STATE_REMOVED);
+                        group.update();
+                        Syncro.getInstance().syncDevices();
                         break;
 
                     case R.id.action_edit:
@@ -268,7 +243,8 @@ public class GroupListFragment extends BlinkListFragment {
 
                     case R.id.action_sync:
                         group = getItem(position);
-                        group.updateDevices();
+                        group.setState(BlinkApp.STATE_UPDATED);
+                        group.update();
                         Syncro.getInstance().syncDevices();
                         break;
 

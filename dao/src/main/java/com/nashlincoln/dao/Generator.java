@@ -56,7 +56,9 @@ public class Generator {
         Property groupAttributableType = group.addStringProperty("attributableType").getProperty();
 
         Entity groupDevice = schema.addEntity("GroupDevice");
+        groupDevice.setHasKeepSections(true);
         groupDevice.addIdProperty().autoincrement();
+        groupDevice.addIntProperty("state");
         Property groupDeviceGroupId = groupDevice.addLongProperty("groupId").index().getProperty();
         Property groupDeviceDeviceId = groupDevice.addLongProperty("deviceId").getProperty();
 
@@ -103,6 +105,7 @@ public class Generator {
                 attr, new Property[]{attributableId, attributableType}).setName("attributes");
 
         groupDevice.addToOne(device, groupDeviceDeviceId);
+        groupDevice.addToOne(group, groupDeviceGroupId);
 
         index = new Index();
         index.addProperty(sceneDeviceId);

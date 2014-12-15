@@ -39,11 +39,6 @@ public class Device {
     // KEEP FIELDS - put your custom fields here
     public static final String KEY = "Device";
     public static final String ATTRIBUTABLE_TYPE = "Device";
-    public static final int STATE_NOMINAL = 0;
-    public static final int STATE_ADDED = 1;
-    public static final int STATE_REMOVED = 2;
-    public static final int STATE_UPDATED = 3;
-    public static final int STATE_NAME_SET = 4;
     // KEEP FIELDS END
 
     public Device() {
@@ -192,7 +187,7 @@ public class Device {
     public void setName(String name, boolean sync) {
         setName(name);
         if (sync) {
-            state = STATE_NAME_SET;
+            state = BlinkApp.STATE_NAME_SET;
             update();
         }
     }
@@ -209,21 +204,21 @@ public class Device {
 
     public void setNominal() {
         switch (state) {
-            case STATE_UPDATED:
+            case BlinkApp.STATE_UPDATED:
                 for (Attribute attribute : getAttributes()) {
                     attribute.onSync();
                 }
-                state = STATE_NOMINAL;
+                state = BlinkApp.STATE_NOMINAL;
                 update();
                 break;
 
-            case STATE_REMOVED:
+            case BlinkApp.STATE_REMOVED:
                 deleteWithReferences();
                 break;
 
-            case STATE_ADDED:
+            case BlinkApp.STATE_ADDED:
 //                Syncro.getInstance().refreshDevices();
-                state = STATE_NOMINAL;
+                state = BlinkApp.STATE_NOMINAL;
                 update();
                 break;
         }
@@ -264,7 +259,7 @@ public class Device {
         Attribute attribute = getAttributes().get(1);
         if (attribute.getInt() != level) {
             attribute.setValueLocal(level);
-            state = STATE_UPDATED;
+            state = BlinkApp.STATE_UPDATED;
             update();
         }
     }
@@ -276,7 +271,7 @@ public class Device {
         Attribute attribute = getAttributes().get(0);
         if (on != attribute.getBool()) {
             attribute.setValueLocal(on);
-            state = STATE_UPDATED;
+            state = BlinkApp.STATE_UPDATED;
             update();
         }
     }

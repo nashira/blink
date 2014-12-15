@@ -14,6 +14,7 @@ import com.nashlincoln.blink.model.DeviceType;
 import com.nashlincoln.blink.model.DeviceTypeDao;
 import com.nashlincoln.blink.model.Group;
 import com.nashlincoln.blink.model.GroupDao;
+import com.nashlincoln.blink.model.GroupDevice;
 import com.nashlincoln.blink.network.BlinkApi;
 import com.nashlincoln.blink.nfc.NfcCommand;
 
@@ -55,65 +56,10 @@ public class Syncro {
         }
 
         final List<Command> commands = new ArrayList<>();
-        for (Device device : mDaoSession.getDeviceDao().loadAll()) {
-            Command command = null;
-            if (device.getState() == null) {
-                device.setState(Device.STATE_NOMINAL);
-            }
-            switch (device.getState()) {
-                case Device.STATE_ADDED:
-                    command = Command.add(device);
-                    break;
 
-                case Device.STATE_REMOVED:
-                    command = Command.remove(device);
-                    break;
-
-                case Device.STATE_UPDATED:
-                    command = Command.update(device);
-                    break;
-
-                case Device.STATE_NAME_SET:
-                    command = Command.setName(device);
-                    break;
-
-                case Device.STATE_NOMINAL:
-                    break;
-            }
-            if (command != null) {
-                commands.add(command);
-            }
-        }
-
-        for (Group group : mDaoSession.getGroupDao().loadAll()) {
-            Command command = null;
-            if (group.getState() == null) {
-                group.setState(Device.STATE_NOMINAL);
-            }
-            switch (group.getState()) {
-                case Device.STATE_ADDED:
-//                    command = Command.add(group);
-//                    break;
-//
-//                case Device.STATE_REMOVED:
-//                    command = Command.remove(group);
-//                    break;
-//
-//                case Device.STATE_NAME_SET:
-//                    command = Command.setName(group);
-//                    break;
-
-                case Device.STATE_UPDATED:
-                    command = Command.update(group);
-                    break;
-
-                case Device.STATE_NOMINAL:
-                    break;
-            }
-            if (command != null) {
-                commands.add(command);
-            }
-        }
+        addDeviceCommands(commands);
+        addGroupCommands(commands);
+        addGroupDeviceCommands(commands);
 
         if (commands.size() > 0) {
             BlinkApi.getClient().sendCommands(commands, new Callback<Response>() {
@@ -125,17 +71,25 @@ public class Syncro {
                         public void run() {
                             for (Command command : commands) {
                                 needsRefresh[0] |= command.action.equals(Command.ADD);
+                                needsRefresh[0] |= command.action.equals(Command.UPDATE_GROUP);
+
                                 if (command.device != null) {
                                     command.device.setNominal();
                                 }
+
                                 if (command.group != null) {
                                     command.group.setNominal();
+                                }
+
+                                if (command.groupDevice != null) {
+                                    command.groupDevice.setNominal();
                                 }
                             }
                         }
                     });
 
                     Event.broadcast(Device.KEY);
+                    Event.broadcast(Group.KEY);
 
                     if (needsRefresh[0]) {
                         fetchDevices();
@@ -147,6 +101,91 @@ public class Syncro {
 
                 }
             });
+        }
+    }
+
+    private void addGroupDeviceCommands(List<Command> commands) {
+        for (GroupDevice groupDevice : mDaoSession.getGroupDeviceDao().loadAll()) {
+            Command command = null;
+            if (groupDevice.getState() == null) {
+                groupDevice.setState(BlinkApp.STATE_NOMINAL);
+            }
+            switch (groupDevice.getState()) {
+                case BlinkApp.STATE_ADDED:
+                    command = Command.add(groupDevice);
+                    break;
+
+                case BlinkApp.STATE_REMOVED:
+                    command = Command.remove(groupDevice);
+                    break;
+            }
+            if (command != null) {
+                commands.add(command);
+            }
+        }
+    }
+
+    private void addGroupCommands(List<Command> commands) {
+        for (Group group : mDaoSession.getGroupDao().loadAll()) {
+            Command command = null;
+            if (group.getState() == null) {
+                group.setState(BlinkApp.STATE_NOMINAL);
+            }
+            switch (group.getState()) {
+                case BlinkApp.STATE_ADDED:
+                    command = Command.add(group);
+                    break;
+
+                case BlinkApp.STATE_REMOVED:
+                    command = Command.remove(group);
+                    break;
+
+                case BlinkApp.STATE_NAME_SET:
+                    command = Command.setName(group);
+                    break;
+
+                case BlinkApp.STATE_UPDATED:
+                    command = Command.update(group);
+                    break;
+
+                case BlinkApp.STATE_NOMINAL:
+                    break;
+            }
+            if (command != null) {
+                commands.add(command);
+            }
+        }
+    }
+
+    private void addDeviceCommands(List<Command> commands) {
+        for (Device device : mDaoSession.getDeviceDao().loadAll()) {
+            Command command = null;
+            if (device.getState() == null) {
+                device.setState(BlinkApp.STATE_NOMINAL);
+            }
+            switch (device.getState()) {
+                case BlinkApp.STATE_ADDED:
+                    command = Command.add(device);
+                    break;
+
+                case BlinkApp.STATE_REMOVED:
+                    command = Command.remove(device);
+                    break;
+
+                case BlinkApp.STATE_UPDATED:
+                    command = Command.update(device);
+                    break;
+
+                case BlinkApp.STATE_NAME_SET:
+                    command = Command.setName(device);
+                    break;
+
+                case BlinkApp.STATE_NOMINAL:
+                    break;
+            }
+            if (command != null) {
+                commands.add(command);
+            }
         }
     }
 
@@ -251,6 +290,7 @@ public class Syncro {
                             group.flushAttributes();
                             group.resetAttributes();
                             group.flushGroupDevices();
+                            group.resetGroupDeviceList();
                             groupDao.insertOrReplace(group);
                         }
 

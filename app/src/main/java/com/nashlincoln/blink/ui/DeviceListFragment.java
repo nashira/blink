@@ -175,7 +175,7 @@ public class DeviceListFragment extends BlinkListFragment {
 
                     case R.id.action_remove:
                         device = getItem(position);
-                        device.setState(Device.STATE_REMOVED);
+                        device.setState(BlinkApp.STATE_REMOVED);
                         Syncro.getInstance().syncDevices();
                         break;
 

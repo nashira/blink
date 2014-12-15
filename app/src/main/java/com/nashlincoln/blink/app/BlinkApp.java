@@ -23,6 +23,11 @@ public class BlinkApp extends Application {
     public static final String EXTRA_ID = BuildConfig.APPLICATION_ID + ".ID";
     public static final int TYPE_DEVICE = 0;
     public static final int TYPE_DEVICE_TYPE = 1;
+    public static final int STATE_NOMINAL = 0;
+    public static final int STATE_ADDED = 1;
+    public static final int STATE_REMOVED = 2;
+    public static final int STATE_UPDATED = 3;
+    public static final int STATE_NAME_SET = 4;
     private static String PREF_API_HOST;
     private static String PREF_SSID;
 

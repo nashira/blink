@@ -4,6 +4,7 @@ import com.nashlincoln.blink.model.Attribute;
 import com.nashlincoln.blink.model.AttributeType;
 import com.nashlincoln.blink.model.Device;
 import com.nashlincoln.blink.model.Group;
+import com.nashlincoln.blink.model.GroupDevice;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,13 +18,20 @@ public class Command {
     public static final String UPDATE = "update";
     public static final String UPDATE_GROUP = "update-group";
     public static final String SET_NAME = "set-name";
+    private static final String ADD_GROUP = "add-group";
+    private static final String REMOVE_GROUP = "remove-group";
+    private static final String SET_NAME_GROUP = "set-name-group";
+    private static final String ADD_GROUP_DEVICE = "add-group-device";
+    private static final String REMOVE_GROUP_DEVICE = "remove-group-device";
     public long id;
+    public long groupId;
     public String action;
     public String name;
     public String type;
     public List<Update> updates;
     public transient Device device;
     public transient Group group;
+    public transient GroupDevice groupDevice;
 
     public static Command add(Device device) {
         Command command = new Command();
@@ -75,6 +83,49 @@ public class Command {
                 command.updates.add(new Update(attribute));
             }
         }
+        return command;
+    }
+
+    public static Command add(Group group) {
+        Command command = new Command();
+        command.group = group;
+        command.action = ADD_GROUP;
+        command.name = group.getName();
+        return command;
+    }
+
+    public static Command remove(Group group) {
+        Command command = new Command();
+        command.group = group;
+        command.action = REMOVE_GROUP;
+        command.id = group.getId();
+        return command;
+    }
+
+    public static Command setName(Group group) {
+        Command command = new Command();
+        command.group = group;
+        command.action = SET_NAME_GROUP;
+        command.id = group.getId();
+        command.name = group.getName();
+        return command;
+    }
+
+    public static Command add(GroupDevice groupDevice) {
+        Command command = new Command();
+        command.groupDevice = groupDevice;
+        command.action = ADD_GROUP_DEVICE;
+        command.id = groupDevice.getDeviceId();
+        command.groupId = groupDevice.getGroupId();
+        return command;
+    }
+
+    public static Command remove(GroupDevice groupDevice) {
+        Command command = new Command();
+        command.groupDevice = groupDevice;
+        command.action = REMOVE_GROUP_DEVICE;
+        command.id = groupDevice.getDeviceId();
+        command.groupId = groupDevice.getGroupId();
         return command;
     }
 

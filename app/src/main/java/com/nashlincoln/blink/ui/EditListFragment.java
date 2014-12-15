@@ -8,6 +8,7 @@ import android.content.Loader;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -36,6 +37,7 @@ import java.util.Set;
 */
 public class EditListFragment extends BlinkListFragment implements LoaderManager.LoaderCallbacks<List<Device>>, AdapterView.OnItemClickListener {
 
+    private static final String TAG = "EditListFragment";
     private DeviceAdapter mAdapter;
     private EditText mNameView;
     private String mName;
@@ -85,6 +87,8 @@ public class EditListFragment extends BlinkListFragment implements LoaderManager
         if (mId != -1) {
             intent.putExtra(BlinkApp.EXTRA_ID, mId);
         }
+
+        Log.d(TAG, "deviceIds: " + TextUtils.join(",", mChecked));
         intent.putExtra(BlinkApp.EXTRA_NAME, mNameView.getText().toString().trim());
         intent.putExtra(BlinkApp.EXTRA_DEVICE_IDS, deviceIds);
         getActivity().setResult(Activity.RESULT_OK, intent);
@@ -177,6 +181,8 @@ public class EditListFragment extends BlinkListFragment implements LoaderManager
         DeviceAdapter.Holder holder = (DeviceAdapter.Holder) view.getTag();
 
         holder.checkBox.toggle();
+
+        Log.d(TAG, "onItemClick: " + " " + holder.checkBox.isChecked());
 
         Device device = mAdapter.getItem(holder.position);
         if (holder.checkBox.isChecked()) {

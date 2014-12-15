@@ -29,8 +29,9 @@ public class GroupDeviceDao extends AbstractDao<GroupDevice, Long> {
     */
     public static class Properties {
         public final static Property Id = new Property(0, Long.class, "id", true, "_id");
-        public final static Property GroupId = new Property(1, Long.class, "groupId", false, "GROUP_ID");
-        public final static Property DeviceId = new Property(2, Long.class, "deviceId", false, "DEVICE_ID");
+        public final static Property State = new Property(1, Integer.class, "state", false, "STATE");
+        public final static Property GroupId = new Property(2, Long.class, "groupId", false, "GROUP_ID");
+        public final static Property DeviceId = new Property(3, Long.class, "deviceId", false, "DEVICE_ID");
     };
 
     private DaoSession daoSession;
@@ -51,8 +52,9 @@ public class GroupDeviceDao extends AbstractDao<GroupDevice, Long> {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "'GROUP_DEVICE' (" + //
                 "'_id' INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: id
-                "'GROUP_ID' INTEGER," + // 1: groupId
-                "'DEVICE_ID' INTEGER);"); // 2: deviceId
+                "'STATE' INTEGER," + // 1: state
+                "'GROUP_ID' INTEGER," + // 2: groupId
+                "'DEVICE_ID' INTEGER);"); // 3: deviceId
         // Add Indexes
         db.execSQL("CREATE INDEX " + constraint + "IDX_GROUP_DEVICE_GROUP_ID ON GROUP_DEVICE" +
                 " (GROUP_ID);");
@@ -74,14 +76,19 @@ public class GroupDeviceDao extends AbstractDao<GroupDevice, Long> {
             stmt.bindLong(1, id);
         }
  
+        Integer state = entity.getState();
+        if (state != null) {
+            stmt.bindLong(2, state);
+        }
+ 
         Long groupId = entity.getGroupId();
         if (groupId != null) {
-            stmt.bindLong(2, groupId);
+            stmt.bindLong(3, groupId);
         }
  
         Long deviceId = entity.getDeviceId();
         if (deviceId != null) {
-            stmt.bindLong(3, deviceId);
+            stmt.bindLong(4, deviceId);
         }
     }
 
@@ -102,8 +109,9 @@ public class GroupDeviceDao extends AbstractDao<GroupDevice, Long> {
     public GroupDevice readEntity(Cursor cursor, int offset) {
         GroupDevice entity = new GroupDevice( //
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
-            cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1), // groupId
-            cursor.isNull(offset + 2) ? null : cursor.getLong(offset + 2) // deviceId
+            cursor.isNull(offset + 1) ? null : cursor.getInt(offset + 1), // state
+            cursor.isNull(offset + 2) ? null : cursor.getLong(offset + 2), // groupId
+            cursor.isNull(offset + 3) ? null : cursor.getLong(offset + 3) // deviceId
         );
         return entity;
     }
@@ -112,8 +120,9 @@ public class GroupDeviceDao extends AbstractDao<GroupDevice, Long> {
     @Override
     public void readEntity(Cursor cursor, GroupDevice entity, int offset) {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
-        entity.setGroupId(cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1));
-        entity.setDeviceId(cursor.isNull(offset + 2) ? null : cursor.getLong(offset + 2));
+        entity.setState(cursor.isNull(offset + 1) ? null : cursor.getInt(offset + 1));
+        entity.setGroupId(cursor.isNull(offset + 2) ? null : cursor.getLong(offset + 2));
+        entity.setDeviceId(cursor.isNull(offset + 3) ? null : cursor.getLong(offset + 3));
      }
     
     /** @inheritdoc */
@@ -161,8 +170,11 @@ public class GroupDeviceDao extends AbstractDao<GroupDevice, Long> {
             SqlUtils.appendColumns(builder, "T", getAllColumns());
             builder.append(',');
             SqlUtils.appendColumns(builder, "T0", daoSession.getDeviceDao().getAllColumns());
+            builder.append(',');
+            SqlUtils.appendColumns(builder, "T1", daoSession.getGroupDao().getAllColumns());
             builder.append(" FROM GROUP_DEVICE T");
             builder.append(" LEFT JOIN DEVICE T0 ON T.'DEVICE_ID'=T0.'_id'");
+            builder.append(" LEFT JOIN BLINK_GROUP T1 ON T.'GROUP_ID'=T1.'_id'");
             builder.append(' ');
             selectDeep = builder.toString();
         }
@@ -175,6 +187,10 @@ public class GroupDeviceDao extends AbstractDao<GroupDevice, Long> {
 
         Device device = loadCurrentOther(daoSession.getDeviceDao(), cursor, offset);
         entity.setDevice(device);
+        offset += daoSession.getDeviceDao().getAllColumns().length;
+
+        Group group = loadCurrentOther(daoSession.getGroupDao(), cursor, offset);
+        entity.setGroup(group);
 
         return entity;    
     }
