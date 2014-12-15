@@ -2,10 +2,12 @@ package com.nashlincoln.blink.ui;
 
 import android.app.Fragment;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
@@ -13,6 +15,7 @@ import android.support.v7.widget.Toolbar;
 import com.nashlincoln.blink.R;
 import com.nashlincoln.blink.app.BlinkApp;
 import com.nashlincoln.blink.app.NetworkReceiver;
+import com.nashlincoln.blink.network.BlinkApi;
 
 /**
  * Created by nash on 10/18/14.
@@ -36,7 +39,7 @@ public class SettingsActivity extends ActionBarActivity {
         }
     }
 
-    public static class SettingsFragment extends PreferenceFragment {
+    public static class SettingsFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -46,18 +49,26 @@ public class SettingsActivity extends ActionBarActivity {
         }
 
         @Override
-        public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
-            if (preference.getKey().equals(getString(R.string.preference_key_host))) {
-                BlinkApp.getApp().setHost(((EditTextPreference)preference).getText());
+        public void onResume() {
+            super.onResume();
+            PreferenceManager.getDefaultSharedPreferences(getActivity()).registerOnSharedPreferenceChangeListener(this);
+        }
+
+        @Override
+        public void onPause() {
+            super.onPause();
+            PreferenceManager.getDefaultSharedPreferences(getActivity()).unregisterOnSharedPreferenceChangeListener(this);
+        }
+
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+            if (key.equals(getString(R.string.preference_key_host))) {
+                String host = sharedPreferences.getString(key, "");
+                BlinkApi.createService(host);
             }
-//            if (preference.getKey().equals(getString(R.string.preference_key_ssid))) {
-//                BlinkApp.getApp().setSsid(((EditTextPreference)preference).getText());
-//            }
 
             Intent intent = new Intent(getActivity(), NetworkReceiver.class);
             getActivity().sendBroadcast(intent);
-            BlinkApp.getApp().fetchData();
-            return super.onPreferenceTreeClick(preferenceScreen, preference);
         }
     }
 }

@@ -37,7 +37,7 @@ public class Syncro {
     public static final String CONNECTION = "Connection";
     private static Syncro sInstance;
     private final DaoSession mDaoSession;
-    private boolean mIsConnected = true;
+    private boolean mIsConnected = false;
 
     public static Syncro getInstance() {
         if (sInstance == null) {
@@ -227,7 +227,14 @@ public class Syncro {
 
     public void fetchDevicesAndGroups() {
         fetchDevices();
-        fetchGroups();
+        final String key = Device.KEY + "/fetch";
+        Event.observe(key, new Observer() {
+            @Override
+            public void update(Observable observable, Object data) {
+                Event.ignore(key, this);
+                fetchGroups();
+            }
+        });
     }
 
 
@@ -262,6 +269,7 @@ public class Syncro {
                 });
                 mDaoSession.clear();
                 Event.broadcast(Device.KEY);
+                Event.broadcast(Device.KEY + "/fetch");
             }
 
             @Override
@@ -352,9 +360,5 @@ public class Syncro {
             }
         });
         syncDevices();
-    }
-
-    public boolean isConnected() {
-        return mIsConnected;
     }
 }

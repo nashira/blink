@@ -70,10 +70,6 @@ public class BlinkApp extends Application {
         return !(getHost().equals("") || getSsid().equals(""));
     }
 
-    public void setHost(String host) {
-        BlinkApi.createService(host);
-    }
-
     public String getHost() {
         return mPreferences.getString(PREF_API_HOST, "");
     }
