@@ -3,6 +3,10 @@ blink
 
 Server scripts and Android app to control a Wink hub on a local network
 
+**News**
+* Supports adding and removing devices.
+* Uses the built in "Groups" functionality of the new .47 firmware, groups of lights respond all at once, instead of one at a time.  Current master is incompatible with older firmware.
+
 ![Devices](/../screenshots/screenshots/devices.png?raw=true "Devices")
 ![Devices](/../screenshots/screenshots/groups.png?raw=true "Groups")
 ![Devices](/../screenshots/screenshots/scenes_collapsed.png?raw=true "Scenes Collapsed")
