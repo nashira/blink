@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="greendao-1.3.8-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/app/libs/greendao-1.3.8-SNAPSHOT.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

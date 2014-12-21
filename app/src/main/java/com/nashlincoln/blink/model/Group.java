@@ -173,7 +173,7 @@ public class Group {
         for (Attribute attribute : getAttributes()) {
             attribute.setAttributableId(id);
             attribute.setAttributableType(ATTRIBUTABLE_TYPE);
-            attributeDao.insertOrReplace(attribute);
+            attributeDao.insertOrIgnore(attribute);
         }
     }
 
