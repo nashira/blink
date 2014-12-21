@@ -33,13 +33,13 @@
       case 'update':
         foreach ($command->updates as $update) {
           $attr = ' -t ' . escapeshellarg($update->id) . ' -v ' . escapeshellarg($update->value);
-          exec('aprontest -u -m ' . escapeshellarg($command->id) . $attr . ' &> /dev/null &');
+          exec('aprontest -u -m ' . escapeshellarg($command->id) . $attr);
         }
         $responses[] = ['status' => 'ok'];
       break;
 
       case 'set-name':
-        exec('aprontest -m ' . escapeshellarg($command->id) . ' --set-name ' .  escapeshellarg($command->name) . ' &> /dev/null &');
+        exec('aprontest -m ' . escapeshellarg($command->id) . ' --set-name ' .  escapeshellarg($command->name));
         $responses[] = ['status' => 'ok'];
       break;
 
@@ -56,7 +56,7 @@
       case 'update-group':
         foreach ($command->updates as $update) {
           $attr = ' -t ' . escapeshellarg($update->id) . ' -v ' . escapeshellarg($update->value);
-          exec('aprontest -u -x ' . escapeshellarg($command->id) . $attr . ' &> /dev/null &');
+          exec('aprontest -u -x ' . escapeshellarg($command->id) . $attr);
         }
         $responses[] = ['status' => 'ok'];
       break;
