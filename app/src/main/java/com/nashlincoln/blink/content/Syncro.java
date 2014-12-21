@@ -94,7 +94,7 @@ public class Syncro {
                     Event.broadcast(Device.KEY);
                     Event.broadcast(Group.KEY);
 
-//                    if (needsRefresh[0]) {
+                    if (needsRefresh[0]) {
                         // delay this so that commands have a chance to complete
                         mHandler.postDelayed(new Runnable() {
                             @Override
@@ -102,7 +102,7 @@ public class Syncro {
                                 fetchDevices();
                             }
                         }, 4000);
-//                    }
+                    }
                 }
 
                 @Override
@@ -351,17 +351,33 @@ public class Syncro {
 
     public void applyNfcCommands(final List<NfcCommand> commands) {
         final DeviceDao deviceDao = mDaoSession.getDeviceDao();
+        final GroupDao groupDao = mDaoSession.getGroupDao();
         mDaoSession.runInTx(new Runnable() {
             @Override
             public void run() {
                 for (NfcCommand command : commands) {
-                    Device device = deviceDao.load(command.i);
-                    if (device != null) {
-                        for (NfcCommand.Update update : command.u) {
-                            if (update.i == 1) {
-                                device.setOn(update.v.equals(Attribute.ON));
-                            } else if (update.i == 2) {
-                                device.setLevel(Integer.parseInt(update.v));
+                    if (command.d != null) {
+                        Device device = deviceDao.load(command.d);
+                        if (device != null) {
+                            for (NfcCommand.Update update : command.u) {
+                                if (update.i == 1) {
+                                    device.setOn(update.v.equals(Attribute.ON));
+                                } else if (update.i == 2) {
+                                    device.setLevel(Integer.parseInt(update.v));
+                                }
+                            }
+                        }
+                    }
+
+                    if (command.g != null) {
+                        Group group = groupDao.load(command.g);
+                        if (group != null) {
+                            for (NfcCommand.Update update : command.u) {
+                                if (update.i == 1) {
+                                    group.setOn(update.v.equals(Attribute.ON));
+                                } else if (update.i == 2) {
+                                    group.setLevel(Integer.parseInt(update.v));
+                                }
                             }
                         }
                     }

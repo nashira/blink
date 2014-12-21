@@ -15,6 +15,7 @@ import android.nfc.tech.Ndef;
 import android.nfc.tech.NdefFormatable;
 import android.os.AsyncTask;
 import android.os.Parcelable;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.gson.reflect.TypeToken;
@@ -44,6 +45,7 @@ public class NfcUtils {
                 messages[i] = (NdefMessage) rawMessages[i];
                 NdefRecord record = messages[i].getRecords()[0];
                 String text = new String(record.getPayload());
+                Log.d(TAG, "readTag: " + text);
                 List<NfcCommand> commands = BlinkApi.getGson().fromJson(text, new TypeToken<List<NfcCommand>>(){}.getType());
                 Syncro.getInstance().applyNfcCommands(commands);
             }
@@ -78,6 +80,8 @@ public class NfcUtils {
 
                 Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
                 String data = intent.getStringExtra(Intent.EXTRA_TEXT);
+
+                Log.d(TAG, "writeTag: " + data);
 
                 NdefRecord payload = new NdefRecord(NdefRecord.TNF_MIME_MEDIA,
                         ("application/" + BuildConfig.APPLICATION_ID).getBytes(Charset.forName("US-ASCII")),
