@@ -11,7 +11,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_marginRight="@dimen/padding_large" />
+        android:layout_marginRight="@dimen/padding_large"
+        android:background="@android:color/transparent"
+        android:clickable="false" />
 
     <TextView
         android:id="@+id/text"
