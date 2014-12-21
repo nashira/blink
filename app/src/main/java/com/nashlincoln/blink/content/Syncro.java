@@ -1,5 +1,6 @@
 package com.nashlincoln.blink.content;
 
+import android.os.Handler;
 import android.util.Log;
 
 import com.nashlincoln.blink.app.BlinkApp;
@@ -38,6 +39,7 @@ public class Syncro {
     private static Syncro sInstance;
     private final DaoSession mDaoSession;
     private boolean mIsConnected = false;
+    private Handler mHandler;
 
     public static Syncro getInstance() {
         if (sInstance == null) {
@@ -48,6 +50,7 @@ public class Syncro {
 
     private Syncro() {
         mDaoSession = BlinkApp.getDaoSession();
+        mHandler = new Handler(BlinkApp.getApp().getMainLooper());
     }
 
     public void syncDevices() {
@@ -91,9 +94,15 @@ public class Syncro {
                     Event.broadcast(Device.KEY);
                     Event.broadcast(Group.KEY);
 
-                    if (needsRefresh[0]) {
-                        fetchDevices();
-                    }
+//                    if (needsRefresh[0]) {
+                        // delay this so that commands have a chance to complete
+                        mHandler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                fetchDevices();
+                            }
+                        }, 4000);
+//                    }
                 }
 
                 @Override

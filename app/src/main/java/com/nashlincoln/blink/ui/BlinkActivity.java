@@ -12,30 +12,40 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
 
 import com.nashlincoln.blink.R;
 import com.nashlincoln.blink.app.BlinkApp;
 import com.nashlincoln.blink.app.FragmentPagerAdapter;
 import com.nashlincoln.blink.content.Syncro;
+import com.nashlincoln.blink.event.Event;
+import com.nashlincoln.blink.network.BlinkApi;
 import com.nashlincoln.blink.nfc.NfcUtils;
 import com.nashlincoln.blink.widget.SlidingTabLayout;
+
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * Created by nash on 10/5/14.
  */
-public class BlinkActivity extends ActionBarActivity {
+public class BlinkActivity extends ActionBarActivity implements Observer {
 
     private static final String TAG = "BlinkActivity";
     private ViewPager mViewPager;
     private SlidingTabLayout mSlidingTabLayout;
+    private ProgressBar mProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_blink);
+        mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitleTextColor(0xffffffff);
         setSupportActionBar(toolbar);
@@ -84,6 +94,8 @@ public class BlinkActivity extends ActionBarActivity {
                     new IntentFilter[]{new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED)},
                     null);
         }
+
+        Event.observe("network", this);
     }
 
     @Override
@@ -93,6 +105,7 @@ public class BlinkActivity extends ActionBarActivity {
         if (defaultAdapter != null) {
             defaultAdapter.disableForegroundDispatch(this);
         }
+        Event.ignore("network", this);
     }
 
     @Override
@@ -116,6 +129,23 @@ public class BlinkActivity extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public void update(Observable observable, Object data) {
+        Log.d(TAG, "update: " + BlinkApi.getRequestCount());
+        runOnUiThread(mProgressRunnable);
+    }
+
+    Runnable mProgressRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (BlinkApi.getRequestCount() > 0) {
+                mProgressBar.setVisibility(View.VISIBLE);
+            } else {
+                mProgressBar.setVisibility(View.INVISIBLE);
+            }
+        }
+    };
 
     class FragmentAdapter extends FragmentPagerAdapter {
 
