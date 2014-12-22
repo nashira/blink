@@ -63,19 +63,20 @@ public class BlinkApi {
                         Event.broadcast("network");
                     }
                 })
-                .setClient(new OkClient(){
+                .setClient(new OkClient() {
                     @Override
                     public Response execute(Request request) throws IOException {
-                        Response response = super.execute(request);
-                        sRequestCount--;
-                        Event.broadcast("network");
-                        return response;
+                        try {
+                            return super.execute(request);
+                        } finally {
+                            sRequestCount--;
+                            Event.broadcast("network");
+                        }
                     }
-                })
-                .setEndpoint(BlinkApp.getApp().getHost())
+                }).setEndpoint(BlinkApp.getApp().getHost())
                 .setLogLevel(RestAdapter.LogLevel.BASIC)
-//                    .setLogLevel(RestAdapter.LogLevel.HEADERS)
-//                    .setLogLevel(RestAdapter.LogLevel.FULL)
+//                .setLogLevel(RestAdapter.LogLevel.HEADERS)
+//                .setLogLevel(RestAdapter.LogLevel.FULL)
                 .build();
 
         sService = restAdapter.create(BlinkApiInterface.class);
