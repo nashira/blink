@@ -252,6 +252,15 @@ public class Device {
         delete();
     }
 
+    public void setAttribute(Long attributeTypeId, String value) {
+        for (Attribute attribute : getAttributes()) {
+            if (attribute.getAttributeTypeId().equals(attributeTypeId)) {
+                attribute.setValue(value);
+                attribute.update();
+            }
+        }
+    }
+
     public void setLevel(int level) {
         if (getAttributes().size() < 2) {
             return;

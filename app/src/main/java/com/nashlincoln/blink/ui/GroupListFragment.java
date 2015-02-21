@@ -244,6 +244,8 @@ public class GroupListFragment extends BlinkListFragment {
                     case R.id.action_sync:
                         group = getItem(position);
                         group.setState(BlinkApp.STATE_UPDATED);
+                        group.setOn(group.isOn());
+                        group.setLevel(group.getLevel());
                         group.update();
                         Syncro.getInstance().syncDevices();
                         break;

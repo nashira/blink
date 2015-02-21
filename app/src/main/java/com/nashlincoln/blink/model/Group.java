@@ -241,10 +241,16 @@ public class Group {
             @Override
             public void run() {
                 Attribute attribute = getAttributes().get(1);
-                attribute.setValueLocal(String.valueOf(level));
+                String newValue = String.valueOf(level);
+                attribute.setValueLocal(newValue);
                 attribute.update();
                 state = BlinkApp.STATE_UPDATED;
                 update();
+
+                Long attributeTypeId = attribute.getAttributeTypeId();
+                for (GroupDevice groupDevice : getGroupDeviceList()) {
+                    groupDevice.getDevice().setAttribute(attributeTypeId, newValue);
+                }
             }
         });
     }
@@ -254,10 +260,16 @@ public class Group {
             @Override
             public void run() {
                 Attribute attribute = getAttributes().get(0);
-                attribute.setValueLocal(on ? Attribute.ON : Attribute.OFF);
+                String newValue = on ? Attribute.ON : Attribute.OFF;
+                attribute.setValueLocal(newValue);
                 attribute.update();
                 state = BlinkApp.STATE_UPDATED;
                 update();
+
+                Long attributeTypeId = attribute.getAttributeTypeId();
+                for (GroupDevice groupDevice : getGroupDeviceList()) {
+                    groupDevice.getDevice().setAttribute(attributeTypeId, newValue);
+                }
             }
         });
     }

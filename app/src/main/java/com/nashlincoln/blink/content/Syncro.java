@@ -94,15 +94,15 @@ public class Syncro {
                     Event.broadcast(Device.KEY);
                     Event.broadcast(Group.KEY);
 
-                    if (needsRefresh[0]) {
-                        // delay this so that commands have a chance to complete
-                        mHandler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                fetchDevices();
-                            }
-                        }, 4000);
-                    }
+//                    if (needsRefresh[0]) {
+//                        // delay this so that commands have a chance to complete
+//                        mHandler.postDelayed(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                fetchDevices();
+//                            }
+//                        }, 500);
+//                    }
                 }
 
                 @Override
